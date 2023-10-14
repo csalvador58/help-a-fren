@@ -1,0 +1,18 @@
+{
+    "circuitId": "credentialAtomicQuerySigV2",
+    "id": 1697265032,
+    "query": {
+      "allowedIssuers": [
+        "*"
+      ],
+      "context": "https://ipfs.io/ipfs/QmQucADYyaWJ4hAdHNKdCRJajoeT2p32Jn6tKQ7yRYAAk5",
+      "credentialSubject": {
+        "zip": {
+          "$in": [
+            "\"96761\""
+          ]
+        }
+      },
+      "type": "Identity"
+    }
+  }
