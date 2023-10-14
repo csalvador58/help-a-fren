@@ -1,3 +1,23 @@
+
+# Help-A-Fren
+
+
+```
+# Terminal 1
+cd app
+yarn chain
+
+# Terminal 2
+cd app
+yarn deploy
+
+# Terminal 3
+cd app
+yarn start
+
+```
+
+---
 # 🏗 Scaffold-ETH 2
 
 <h4 align="center">
