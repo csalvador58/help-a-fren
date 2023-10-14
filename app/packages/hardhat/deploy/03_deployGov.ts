@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import deployHelpAFrenTimelock from "./02_deployTimelock";
 
 /**
  * Deploys a contract named "HelpAFrenGov" using the deployer account and
@@ -39,6 +40,9 @@ const deployHelpAFrenGov: DeployFunction = async function (hre: HardhatRuntimeEn
 
   // Get the deployed contract
   // const HelpAFrenGov = await hre.ethers.getContract("HelpAFrenGov", deployer);
+
+  // Set Timelock Role with Gov Address
+  await deployHelpAFrenTimelock
 
 };
 
