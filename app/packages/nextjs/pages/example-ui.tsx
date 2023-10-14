@@ -4,10 +4,12 @@ import { Magic } from "magic-sdk";
 import type { NextPage } from "next";
 import { ArrowSmallRightIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
-// import { ContractData } from "~~/components/example-ui/ContractData";
-// import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
+import { ContractData } from "~~/components/example-ui/ContractData";
+import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+
+const TEST_WALLET = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
 
 const ExampleUI: NextPage = () => {
   // const { data: totalCounter } = useScaffoldContractRead({
@@ -20,13 +22,13 @@ const ExampleUI: NextPage = () => {
   const { data: nftBalance } = useScaffoldContractRead({
     contractName: "HelpAFrenToken",
     functionName: "balanceOf",
-    args: ["0x70997970C51812dc3A010C7d01b50e0d17dc79C8"],
+    args: [TEST_WALLET],
   });
 
   const { writeAsync, isLoading } = useScaffoldContractWrite({
     contractName: "HelpAFrenToken",
     functionName: "safeMint",
-    args: ["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "test"],
+    args: [TEST_WALLET, "test"],
     // value: parseEther("0.01"),
     onBlockConfirmation: txnReceipt => {
       console.log("📦 Transaction blockHash", txnReceipt.blockHash);
@@ -54,18 +56,16 @@ const ExampleUI: NextPage = () => {
   //   };
   // }, []);
 
+  // Magic Auth
   const signInWithMagicOTP = async () => {
     try {
       if (typeof window !== "undefined") {
         const MAGIC = new Magic(process.env.NEXT_PUBLIC_MAGIC_API_KEY!, {
           network: {
-            // rpcUrl: 'https://rpc-mumbai.maticvigil.com/',
             rpcUrl: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY!}}`,
             chainId: 80001, // or preferred chain
           },
         });
-        // Get email from medplum login profile and sign in with Magic
-        // const email = medplum.getProfile()?.telecom?.find((t) => t.system === 'email')?.value;
         const email = ""; // Set to empty string to force Magic to show UI
         if (!!email) {
           // console.log('Logging in Magic with email: ', email);
@@ -115,15 +115,15 @@ const ExampleUI: NextPage = () => {
       </MetaHeader>
       {/* <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi"> */}
       <div className="grid lg:grid-cols-2" data-theme="exampleUi">
-        {/* <ContractInteraction /> */}
-        {/* <ContractData /> */}
+        <ContractInteraction />
+        <ContractData />
 
         {/* Testing */}
 
         <div className="card w-96 bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Current Account</h2>
-            <Address address="0x70997970C51812dc3A010C7d01b50e0d17dc79C8" />
+            <Address address={TEST_WALLET} />
             <p>NFT Balance: {nftBalance?.toString() || "Loading..."}</p>
           </div>
         </div>
