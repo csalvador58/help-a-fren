@@ -4,10 +4,11 @@ import { Magic } from "magic-sdk";
 import type { NextPage } from "next";
 import { ArrowSmallRightIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { ContractData } from "~~/components/example-ui/ContractData";
-import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
+// import { ContractData } from "~~/components/example-ui/ContractData";
+// import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useWalletClient } from "wagmi";
 
 const TEST_WALLET = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
 
@@ -18,15 +19,21 @@ const ExampleUI: NextPage = () => {
   //   args: ["ARGUMENTS IF THE FUNCTION ACCEPTS ANY"],
   // });
   // const [magicIsActive, setMagicIsActive] = useState<boolean>(false);
+  const { data: walletClient } = useWalletClient();
 
   const { data: nftBalance } = useScaffoldContractRead({
-    contractName: "HelpAFrenToken",
+    contractName: "HelpAFrenVoteToken",
     functionName: "balanceOf",
+    args: [TEST_WALLET],
+  });
+  const { data: votingPower } = useScaffoldContractRead({
+    contractName: "HelpAFrenVoteToken",
+    functionName: "getVotes",
     args: [TEST_WALLET],
   });
 
   const { writeAsync, isLoading } = useScaffoldContractWrite({
-    contractName: "HelpAFrenToken",
+    contractName: "HelpAFrenVoteToken",
     functionName: "safeMint",
     args: [TEST_WALLET, "test"],
     // value: parseEther("0.01"),
@@ -115,8 +122,8 @@ const ExampleUI: NextPage = () => {
       </MetaHeader>
       {/* <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi"> */}
       <div className="grid lg:grid-cols-2" data-theme="exampleUi">
-        <ContractInteraction />
-        <ContractData />
+        {/* <ContractInteraction /> */}
+        {/* <ContractData /> */}
 
         {/* Testing */}
 
@@ -125,6 +132,8 @@ const ExampleUI: NextPage = () => {
             <h2 className="card-title">Current Account</h2>
             <Address address={TEST_WALLET} />
             <p>NFT Balance: {nftBalance?.toString() || "Loading..."}</p>
+            <p>Voting Power: {votingPower?.toString() || "Loading..."}</p>
+            <p>Wallet Client: {walletClient?.toString() || "Loading..."}</p>
           </div>
         </div>
 

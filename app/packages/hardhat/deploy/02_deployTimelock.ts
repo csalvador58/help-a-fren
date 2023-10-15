@@ -18,13 +18,16 @@ const deployHelpAFrenTimelock: DeployFunction = async function (hre: HardhatRunt
     with a random private key in the .env file (then used on hardhat.config.ts)
     You can run the `yarn account` command to check your balance in every network.
   */
+
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
+  const [account1, account2, account3] = await hre.getUnnamedAccounts();
+
   const deployedHelpAFrenTimelock = await deploy("HelpAFrenTimelock", {
     from: deployer,
-    // Contract constructor arguments
-    args: [0, [deployer], [deployer], deployer],
+    // Contract constructor arguments, (uint256 minDelay,	address[] memory proposers,	address[] memory executors,	address admin)
+    args: [0, [account1, account2, account3], [deployer], "0x0000000000000000000000000000000000000000"],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.

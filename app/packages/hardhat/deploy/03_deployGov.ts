@@ -1,6 +1,5 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-import deployHelpAFrenTimelock from "./02_deployTimelock";
 
 /**
  * Deploys a contract named "HelpAFrenGov" using the deployer account and
@@ -22,13 +21,13 @@ const deployHelpAFrenGov: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  const helpAFrenToken = await hre.ethers.getContract("HelpAFrenToken", deployer);
+  const helpAFrenVoteToken = await hre.ethers.getContract("HelpAFrenVoteToken", deployer);
   const HelpAFrenTimelock = await hre.ethers.getContract("HelpAFrenTimelock", deployer);
 
   const deployedHelpAFrenGov = await deploy("HelpAFrenGov", {
     from: deployer,
-    // Contract constructor arguments
-    args: [helpAFrenToken.address, HelpAFrenTimelock.address],
+    // Contract constructor arguments, (IVotes _token, TimelockController _timelock)
+    args: [helpAFrenVoteToken.address, HelpAFrenTimelock.address],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
@@ -40,9 +39,6 @@ const deployHelpAFrenGov: DeployFunction = async function (hre: HardhatRuntimeEn
 
   // Get the deployed contract
   // const HelpAFrenGov = await hre.ethers.getContract("HelpAFrenGov", deployer);
-
-  // Set Timelock Role with Gov Address
-  await deployHelpAFrenTimelock
 
 };
 
