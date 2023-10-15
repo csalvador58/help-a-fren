@@ -1,16 +1,22 @@
 // import { useEffect, useState } from "react";
-import { RPCError, RPCErrorCode } from "magic-sdk";
-import { Magic } from "magic-sdk";
+import { useState } from "react";
+import { InstanceWithExtensions, SDKBase } from "@magic-sdk/provider";
+import { Magic, MagicSDKExtensionsOption, MagicUserMetadata } from "magic-sdk";
 import type { NextPage } from "next";
+// import { useWalletClient } from "wagmi";
 import { ArrowSmallRightIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 // import { ContractData } from "~~/components/example-ui/ContractData";
 // import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
-import { Address } from "~~/components/scaffold-eth";
-import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { useWalletClient } from "wagmi";
-
-const TEST_WALLET = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
+import { Address, Balance } from "~~/components/scaffold-eth";
+import {
+  // useAccountBalance,
+  useDeployedContractInfo,
+  useScaffoldContractRead,
+  useScaffoldContractWrite,
+} from "~~/hooks/scaffold-eth";
+import { MagicLogin } from "~~/utils/MagicLogin";
+import { TEST_WALLET } from "~~/utils/constants";
 
 const ExampleUI: NextPage = () => {
   // const { data: totalCounter } = useScaffoldContractRead({
@@ -18,9 +24,17 @@ const ExampleUI: NextPage = () => {
   //   functionName: "getGreeting",
   //   args: ["ARGUMENTS IF THE FUNCTION ACCEPTS ANY"],
   // });
-  // const [magicIsActive, setMagicIsActive] = useState<boolean>(false);
-  const { data: walletClient } = useWalletClient();
+  let magic: InstanceWithExtensions<SDKBase, MagicSDKExtensionsOption<string>>;
+  if (typeof window !== "undefined") {
+    magic = new Magic(process.env.NEXT_PUBLIC_MAGIC_API_KEY as string);
+  }
+  const [magicLogin, setMagicLogin] = useState<any>(null);
+  const [magicAddress, setMagicAddress] = useState<string>("");
 
+  // Treasury
+  const { data: treasuryInfo } = useDeployedContractInfo("HelpAFrenTreasury");
+
+  // Voting Token
   const { data: nftBalance } = useScaffoldContractRead({
     contractName: "HelpAFrenVoteToken",
     functionName: "balanceOf",
@@ -32,7 +46,8 @@ const ExampleUI: NextPage = () => {
     args: [TEST_WALLET],
   });
 
-  const { writeAsync, isLoading } = useScaffoldContractWrite({
+  // Voter claims Vote token and delegates to self
+  const { writeAsync: claimVoteToken, isLoading: isClaimVoteTokenLoading } = useScaffoldContractWrite({
     contractName: "HelpAFrenVoteToken",
     functionName: "safeMint",
     args: [TEST_WALLET, "test"],
@@ -42,72 +57,31 @@ const ExampleUI: NextPage = () => {
     },
   });
 
-  // useEffect(() => {
-  //   const checkLoggedIn = async () => {
-  //     try {
-  //       const result = await MAGIC.user.isLoggedIn();
-  //       console.log('Magic isLoggedIn: ', result);
-  //       setMagicIsActive(result);
-  //     } catch (error) {
-  //       console.error('Error checking Magic logged-in state:', error);
-  //     }
-  //   };
-  //   checkLoggedIn();
+  const { writeAsync: delegateVoteToken, isLoading: isDelegateVoteTokenLoading } = useScaffoldContractWrite({
+    contractName: "HelpAFrenVoteToken",
+    functionName: "delegate",
+    args: [TEST_WALLET],
+    // value: parseEther("0.01"),
+    onBlockConfirmation: txnReceipt => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
 
-  //   return () => {
-  //     // Logout of Magic when user leaves page
-  //     console.log('Logging out of Magic.');
-  //     const logout = async () => await MAGIC.user.logout();
-  //     logout();
-  //     setMagicIsActive(false);
-  //   };
-  // }, []);
+  const handleNFTTokenClaim = async () => {
+    claimVoteToken();
+    delegateVoteToken();
+  };
 
   // Magic Auth
   const signInWithMagicOTP = async () => {
-    try {
-      if (typeof window !== "undefined") {
-        const MAGIC = new Magic(process.env.NEXT_PUBLIC_MAGIC_API_KEY!, {
-          network: {
-            rpcUrl: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY!}}`,
-            chainId: 80001, // or preferred chain
-          },
-        });
-        const email = ""; // Set to empty string to force Magic to show UI
-        if (!!email) {
-          // console.log('Logging in Magic with email: ', email);
-          const response = await MAGIC?.auth.loginWithEmailOTP({ email: email });
-          console.log("response: ", response);
-        } else {
-          const response = await MAGIC?.wallet.connectWithUI();
-          console.log("response: ", response);
-        }
-        // setMagicIsActive(true);
-      } else {
-        console.log("Magic not available");
-      }
-
-    } catch (err) {
-      if (err instanceof RPCError) {
-        switch (err.code) {
-          case RPCErrorCode.MagicLinkFailedVerification:
-            console.log("Magic link failed");
-            break;
-          case RPCErrorCode.MagicLinkExpired:
-            console.log("Magic link timeout");
-            break;
-          case RPCErrorCode.InternalError:
-            console.log("Magic link cancelled");
-            break;
-          case RPCErrorCode.InvalidRequest:
-            console.log("Magic link invalid email");
-            break;
-          case RPCErrorCode.MagicLinkRateLimited:
-            console.log("Magic link rate limited");
-            break;
-        }
-      }
+    const result = await MagicLogin();
+    console.log("Magic Login Response: ", result?.response);
+    if (result?.MAGIC) {
+      setMagicLogin(result.MAGIC);
     }
+
+    const magicResponse: MagicUserMetadata = await magic.user.getMetadata();
+    if (magicResponse.publicAddress) setMagicAddress(magicResponse.publicAddress);
   };
 
   return (
@@ -133,23 +107,58 @@ const ExampleUI: NextPage = () => {
             <Address address={TEST_WALLET} />
             <p>NFT Balance: {nftBalance?.toString() || "Loading..."}</p>
             <p>Voting Power: {votingPower?.toString() || "Loading..."}</p>
-            <p>Wallet Client: {walletClient?.toString() || "Loading..."}</p>
           </div>
         </div>
 
-        <button className="btn btn-wide btn-accent" onClick={signInWithMagicOTP}>
-          Log Into Magic
-        </button>
+        <div className="card w-96 bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">Magic</h2>
+            {!magicLogin && (
+              <button className="btn btn-wide btn-accent" onClick={signInWithMagicOTP}>
+                Log Into Magic
+              </button>
+            )}
+            {magicLogin && (
+              <>
+                <p>Logged in with Magic</p>
+                <Address address={magicAddress} />
+                <button className="btn btn-wide btn-accent" onClick={() => magicLogin?.user.logout()}>
+                  Log Out
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
         {/* Organizer */}
+
+        {/* Treasury */}
+        <div className="card w-96 bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">Treasury Account</h2>
+            <Address address={treasuryInfo?.address} />
+            <div>
+              <div>Treasury Balance: </div>
+              <Balance address={treasuryInfo?.address} className="min-h-0 h-auto" />
+            </div>
+            <div>*Need Deposit Input*</div>
+          </div>
+        </div>
+
         {/* Proposer */}
+
         {/* Voter */}
         <div className="card w-96 bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Voter</h2>
             <p>Claims a vote NFT, only one token can be claimed</p>
             <div className="card-actions justify-end">
-              <button className="btn btn-accent" onClick={() => writeAsync()} disabled={isLoading}>
-                {isLoading ? (
+              <button
+                className="btn btn-accent"
+                onClick={handleNFTTokenClaim}
+                disabled={isClaimVoteTokenLoading || isDelegateVoteTokenLoading}
+              >
+                {isClaimVoteTokenLoading || isDelegateVoteTokenLoading ? (
                   <span className="loading loading-spinner loading-sm"></span>
                 ) : (
                   <>

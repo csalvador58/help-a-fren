@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+// import { TEST_WALLET } from "../../nextjs/utils/constants";
 
 /**
  * Deploys a contract named "MauiStrong" using the deployer account and
@@ -31,10 +32,12 @@ const deployHelpAFrenVoteToken: DeployFunction = async function (hre: HardhatRun
     autoMine: true,
   });
   const helpAFrenVoteTokenDeployedAddress = deployedHelpAFrenVoteToken.address;
-  console.log("helpAFrenVoteTokenDeployedAddress: ", helpAFrenVoteTokenDeployedAddress);
+  console.log("helpAFrenVoteTokenDeployedAddress: \n", helpAFrenVoteTokenDeployedAddress);
 
   // Get the deployed contract
-  // const HelpAFrenToken = await hre.ethers.getContract("HelpAFrenToken", deployer);
+  // const HelpAFrenVoteToken = await hre.ethers.getContract("HelpAFrenToken", deployer);
+
+  
 };
 
 export default deployHelpAFrenVoteToken;
