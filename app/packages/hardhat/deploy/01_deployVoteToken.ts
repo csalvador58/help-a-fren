@@ -7,7 +7,7 @@ import { DeployFunction } from "hardhat-deploy/types";
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deployHelpAFrenToken: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployHelpAFrenVoteToken: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
 
@@ -21,24 +21,24 @@ const deployHelpAFrenToken: DeployFunction = async function (hre: HardhatRuntime
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  const deployedHelpAFrenToken = await deploy("HelpAFrenToken", {
+  const deployedHelpAFrenVoteToken = await deploy("HelpAFrenVoteToken", {
     from: deployer,
-    // Contract constructor arguments
+    // Contract constructor arguments, (address defaultAdmin, address minter)
     args: [deployer, deployer],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
-  const helpAFrenTokenDeployedAddress = deployedHelpAFrenToken.address;
-  console.log("helpAFrenTokenDeployedAddress: ", helpAFrenTokenDeployedAddress);
+  const helpAFrenVoteTokenDeployedAddress = deployedHelpAFrenVoteToken.address;
+  console.log("helpAFrenVoteTokenDeployedAddress: ", helpAFrenVoteTokenDeployedAddress);
 
   // Get the deployed contract
   // const HelpAFrenToken = await hre.ethers.getContract("HelpAFrenToken", deployer);
 };
 
-export default deployHelpAFrenToken;
+export default deployHelpAFrenVoteToken;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags HelpAFrenToken
-deployHelpAFrenToken.tags = ["HelpAFrenToken"];
+deployHelpAFrenVoteToken.tags = ["HelpAFrenVoteToken"];
