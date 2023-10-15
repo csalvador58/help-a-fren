@@ -2757,6 +2757,13 @@ const contracts = {
               type: "function",
             },
             {
+              inputs: [],
+              name: "unlockTreasury",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
               inputs: [
                 {
                   internalType: "address payable",
