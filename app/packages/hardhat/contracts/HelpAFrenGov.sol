@@ -16,7 +16,7 @@ contract HelpAFrenGov is Governor, GovernorCountingSimple, GovernorStorage, Gove
 
     function votingDelay() public pure override returns (uint256) {
         // return 7200; // 1 day
-        return 5; // 1 min @ 12 sec block time
+        return 0; // 1 min @ 12 sec block time
     }
 
     function votingPeriod() public pure override returns (uint256) {

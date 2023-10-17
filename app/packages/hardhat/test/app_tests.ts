@@ -14,7 +14,7 @@ describe("Help A Fren App", function () {
   // -------------------------------------------------------------------------------------------------------------------------
   async function setupAndDeployFixture() {
     // Setup accounts
-    const [deployer, proposer, voter1, voter2, voter3, unauthorizedVoter] = await ethers.getSigners();
+    const [deployer, proposer, voter1, voter2, voter3, unauthorizedVoter, fundRecipient] = await ethers.getSigners();
 
     console.log("Deployer: ", deployer.address);
     console.log("Proposer: ", proposer.address);
@@ -65,6 +65,7 @@ describe("Help A Fren App", function () {
       voter2,
       voter3,
       unauthorizedVoter,
+      fundRecipient,
       HafVoteTokenContract,
       HafTimelockContract,
       HafGovContract,
@@ -72,7 +73,7 @@ describe("Help A Fren App", function () {
     };
   }
 
-  async function mintVoteTokenDelegate(
+  async function mintVoteTokenAndDelegate(
     authorizer: SignerWithAddress,
     recipient: SignerWithAddress,
     voteToken: HelpAFrenVoteToken,
@@ -97,53 +98,39 @@ describe("Help A Fren App", function () {
     return await voteToken.getVotes(address);
   }
 
-  //   async function delegate(
-  //     delegator: SignerWithAddress,
-  //     toAddress: string,
-  //     voteToken: HelpAFrenVoteToken,
-  //   ): Promise<void> {
-  //     const delegateTx = await voteToken.connect(delegator).delegate(toAddress);
-  //     await delegateTx.wait();
-  //   }
+  async function submitProposal(
+    authorizer: SignerWithAddress,
+    _HafTreasuryContract: HelpAFrenTreasury,
+    _HafGovContract: HelpAFrenGov,
+    proposalDesc: string,
+    fundRecipient: string,
+    grantAmount: BigNumber,
+  ): Promise<string> {
+    const transferCallData = _HafTreasuryContract.interface.encodeFunctionData("withdraw", [
+      fundRecipient,
+      grantAmount,
+    ]);
 
-  //   async function getVotingPower(address: string, voteToken: HelpAFrenVoteToken): Promise<BigNumber> {
-  //     return await voteToken.getVotes(address);
-  //   }
+    const submitProposalTx = await _HafGovContract
+      .connect(authorizer)
+      .propose([_HafTreasuryContract.address], [0], [transferCallData], proposalDesc);
+    const submitProposalTxReceipt = await submitProposalTx.wait();
+    return (submitProposalTxReceipt.events?.[0].args?.proposalId).toString();
+  }
 
-  //   async function submitProposal(
-  //     _HafTreasuryContract: HelpAFrenTreasury,
-  //     _HafGovContract: HelpAFrenGov,
-  //     proposalDesc: string,
-  //     fundRecipient: string,
-  //     grantAmount: BigNumber,
-  //   ): Promise<string> {
-  //     const transferCallData = _HafTreasuryContract.interface.encodeFunctionData("withdraw", [
-  //       fundRecipient,
-  //       grantAmount,
-  //     ]);
-
-  //     const submitProposalTx = await _HafGovContract.propose(
-  //       [_HafTreasuryContract.address],
-  //       [0],
-  //       [transferCallData],
-  //       proposalDesc,
-  //     );
-  //     const submitProposalTxReceipt = await submitProposalTx.wait();
-  //     return (submitProposalTxReceipt.events?.[0].args?.proposalId).toString();
-  //   }
-
-  //   async function vote(voter: SignerWithAddress, proposalId: BigNumberish, _HafGovContract: HelpAFrenGov) {
-  //     const voteTx = await _HafGovContract.connect(voter).castVote(proposalId, 1);
-  //     await voteTx.wait();
-  //   }
+  async function vote(voter: SignerWithAddress, proposalId: BigNumberish, _HafGovContract: HelpAFrenGov) {
+    const voteTx = await _HafGovContract.connect(voter).castVote(proposalId, 1);
+    await voteTx.wait();
+  }
 
   // -------------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------TESTS START-----------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------------
 
   it("should allow request for a Voting token and delegated to self", async function () {
+    console.log("\n\nTest: should allow request for a Voting token and delegated to self\n");
     const { deployer, voter1, HafVoteTokenContract } = await loadFixture(setupAndDeployFixture);
-    const voteTokenBalance = await mintVoteTokenDelegate(deployer, voter1, HafVoteTokenContract, "ipfs://testURI");
+    const voteTokenBalance = await mintVoteTokenAndDelegate(deployer, voter1, HafVoteTokenContract, "ipfs://testURI");
     const votingPower = await getVotingPower(voter1.address, HafVoteTokenContract);
     console.log("\n");
     console.log(`voteTokenBalance: `, voteTokenBalance.toNumber());
@@ -170,7 +157,60 @@ describe("Help A Fren App", function () {
   });
 
   it("should allow a proposer to submit a proposal", async function () {
-    
+    const { proposer, fundRecipient, HafTreasuryContract, HafGovContract } = await loadFixture(setupAndDeployFixture);
+
+    const proposalDescription = "Test Proposal";
+    const grantAmount = ethers.utils.parseEther("1");
+
+    const proposalId = await submitProposal(
+      proposer,
+      HafTreasuryContract,
+      HafGovContract,
+      proposalDescription,
+      fundRecipient.address,
+      grantAmount,
+    );
+
+    expect(proposalId).to.not.be.undefined;
+  });
+
+  it("should allow a voter to vote on a proposal", async function () {
+    console.log("\n\nTest: should allow a voter to vote on a proposal\n");
+    const { deployer, proposer, voter1, fundRecipient, HafTreasuryContract, HafGovContract, HafVoteTokenContract } =
+      await loadFixture(setupAndDeployFixture);
+
+    // Voter claim voting token
+    await mintVoteTokenAndDelegate(deployer, voter1, HafVoteTokenContract, "ipfs://testURI");
+    const votingPower = await getVotingPower(voter1.address, HafVoteTokenContract);
+    console.log("Voting power: ", votingPower.toNumber());
+    expect(await getVoteTokenBalance(voter1.address, HafVoteTokenContract)).to.equal(VOTE_TOKEN_MINT);
+    expect(votingPower).to.equal(VOTE_TOKEN_MINT);
+
+    // Create a submitted proposal
+    const proposalDescription = "Test Proposal to grant 1 Ether";
+    const grantAmount = ethers.utils.parseEther("1");
+    const proposalId = await submitProposal(
+      proposer,
+      HafTreasuryContract,
+      HafGovContract,
+      proposalDescription,
+      fundRecipient.address,
+      grantAmount,
+    );
+    expect(proposalId).to.not.be.undefined;
+
+    // Before voting on proposal
+    const proposalStateBeforeVoting = await HafGovContract.state(proposalId.toString());
+    console.log("Proposal state before voting: ", proposalStateBeforeVoting);
+    expect(proposalStateBeforeVoting).to.equal(0);
+
+    // Vote on proposal
+    await vote(voter1, proposalId, HafGovContract);
+
+    // After voting on proposal
+    const proposalStateAfterVoting = await HafGovContract.state(proposalId.toString());
+    console.log("Proposal state after voting: ", proposalStateAfterVoting);
+    expect(proposalStateAfterVoting).to.equal(1);
   });
 
   //   let yourContract: YourContract;
