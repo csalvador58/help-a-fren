@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol";
 
 contract HelpAFrenVoteToken is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, AccessControl, EIP712, ERC721Votes {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    uint256 private _nextTokenId;
+    // uint256 private _nextTokenId;
 
     // map the address to the token id
     mapping(address => uint256) public tokenIds;
@@ -24,14 +24,25 @@ contract HelpAFrenVoteToken is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
         _grantRole(MINTER_ROLE, minter);
     }
 
-    function safeMint(address to, string memory uri) public onlyRole(MINTER_ROLE) {
-        // require to address to not already have a token
-        require(balanceOf(to) == 0, "Address already has a voting token");
+    function safeMint(address to, string memory uri, uint256 tokenId) public onlyRole(MINTER_ROLE) {
+        // require tokenID to not already exist
+        require(tokenIds[to] != tokenId, "Not authorized, proposal already has been voted on by address");
+        
+        // // require to address to not already have a token
+        // require(balanceOf(to) == 0, "Address already has a voting token");
 
-        // Mint token is address does not have a token
-        uint256 tokenId = _nextTokenId++;
+        // uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
+    }
+
+    function tokensByOwner(address owner) public view returns (uint256[] memory) {
+        uint256 tokenCount = balanceOf(owner);
+        uint256[] memory result = new uint256[](tokenCount);
+        for (uint256 i = 0; i < tokenCount; i++) {
+            result[i] = tokenOfOwnerByIndex(owner, i);
+        }
+        return result;
     }
 
 
