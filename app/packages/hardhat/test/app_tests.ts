@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { HelpAFrenGov, HelpAFrenTimelock, HelpAFrenTreasury, HelpAFrenVoteToken } from "../typechain-types";
 import { BigNumber, BigNumberish } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { loadFixture, mine } from "@nomicfoundation/hardhat-network-helpers";
 
 // const VOTE_TOKEN_MINT = ethers.utils.parseEther('1');
 const VOTE_TOKEN_MINT = 1;
@@ -34,9 +34,9 @@ describe("Help A Fren App", function () {
     const hafTimelockCF = await ethers.getContractFactory("HelpAFrenTimelock");
     const HafTimelockContract = (await hafTimelockCF.deploy(
       0,
-      [proposer.address],
+      [],
       [deployer.address],
-      "0x0000000000000000000000000000000000000000",
+      deployer.address,
     )) as HelpAFrenTimelock;
     await HafTimelockContract.deployed();
 
@@ -48,10 +48,35 @@ describe("Help A Fren App", function () {
     )) as HelpAFrenGov;
     await HafGovContract.deployed();
 
+    // // Set timelock roles
+    // await HafTimelockContract.grantRole(await HafTimelockContract.EXECUTOR_ROLE(), HafGovContract.address);
+    // await HafTimelockContract.grantRole(await HafTimelockContract.PROPOSER_ROLE(), HafGovContract.address);
+
+    // Grant roles to Timelock contract
+    const proposerRole = await HafTimelockContract.PROPOSER_ROLE();
+    const executorRole = await HafTimelockContract.EXECUTOR_ROLE();
+    const adminRoles = await HafTimelockContract.DEFAULT_ADMIN_ROLE();
+
+    await HafTimelockContract.connect(deployer).grantRole(proposerRole, HafGovContract.address);
+    await HafTimelockContract.connect(deployer).grantRole(executorRole, "0x0000000000000000000000000000000000000000");
+    await HafTimelockContract.connect(deployer).revokeRole(adminRoles, deployer.address);
+
     // Deploy Treasury contract
     const hafTreasuryCF = await ethers.getContractFactory("HelpAFrenTreasury");
     const HafTreasuryContract = (await hafTreasuryCF.deploy(HafTimelockContract.address)) as HelpAFrenTreasury;
     await HafTreasuryContract.deployed();
+
+    // Send 1 Ether to Treasury contract
+    console.log(
+      "Treasury balance before deposit: ",
+      ethers.utils.formatEther(await ethers.provider.getBalance(HafTreasuryContract.address)),
+    );
+    const depositTx = await HafTreasuryContract.connect(deployer).deposit({ value: ethers.utils.parseEther("1") });
+    await depositTx.wait();
+    console.log(
+      "Treasury balance: ",
+      ethers.utils.formatEther(await ethers.provider.getBalance(HafTreasuryContract.address)),
+    );
 
     // Grant Minter role to known voter addresses
     await HafVoteTokenContract.connect(deployer).grantRole(await HafVoteTokenContract.MINTER_ROLE(), voter1.address);
@@ -179,6 +204,15 @@ describe("Help A Fren App", function () {
     const { deployer, proposer, voter1, fundRecipient, HafTreasuryContract, HafGovContract, HafVoteTokenContract } =
       await loadFixture(setupAndDeployFixture);
 
+    console.log(
+      "Treasury balance: ",
+      ethers.utils.formatEther(await ethers.provider.getBalance(HafTreasuryContract.address)),
+    );
+    console.log(
+      "Fund Recipient balance: ",
+      ethers.utils.formatEther(await ethers.provider.getBalance(fundRecipient.address)),
+    );
+
     // Voter claim voting token
     await mintVoteTokenAndDelegate(deployer, voter1, HafVoteTokenContract, "ipfs://testURI");
     const votingPower = await getVotingPower(voter1.address, HafVoteTokenContract);
@@ -204,6 +238,13 @@ describe("Help A Fren App", function () {
     console.log("Proposal state before voting: ", proposalStateBeforeVoting);
     expect(proposalStateBeforeVoting).to.equal(0);
 
+    // check block number
+    console.log("Block number: ", (await ethers.provider.getBlockNumber()).toString());
+
+    // Mine blocks to reach voting period
+    await mine(5);
+    console.log("Block number: ", (await ethers.provider.getBlockNumber()).toString());
+
     // Vote on proposal
     await vote(voter1, proposalId, HafGovContract);
 
@@ -211,6 +252,23 @@ describe("Help A Fren App", function () {
     const proposalStateAfterVoting = await HafGovContract.state(proposalId.toString());
     console.log("Proposal state after voting: ", proposalStateAfterVoting);
     expect(proposalStateAfterVoting).to.equal(1);
+
+    // Mine blocks to end voting period
+    await mine(40);
+    console.log("Block number: ", (await ethers.provider.getBlockNumber()).toString());
+    console.log(
+      "Treasury balance: ",
+      ethers.utils.formatEther(await ethers.provider.getBalance(HafTreasuryContract.address)),
+    );
+    console.log(
+      "Fund Recipient balance: ",
+      ethers.utils.formatEther(await ethers.provider.getBalance(fundRecipient.address)),
+    );
+
+    const { againstVotes, forVotes, abstainVotes } = await HafGovContract.proposalVotes(proposalId.toString());
+    console.log(`Votes For: ${forVotes.toString()}`);
+    console.log(`Votes Against: ${againstVotes.toString()}`);
+    console.log(`Votes Abstain: ${abstainVotes.toString()}`);
   });
 
   //   let yourContract: YourContract;
