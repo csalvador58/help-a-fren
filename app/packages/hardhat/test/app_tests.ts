@@ -219,6 +219,10 @@ describe("Help A Fren App", function () {
     console.log("\n");
     console.log(`proposalId: `, proposalId);
     expect(proposalId).to.not.be.undefined;
+
+    // Retrieve proposal description
+    const [targets, values, calldatas, descriptionHash] = await HafGovContract.proposalDetails(proposalId);
+    console.log(`descriptionHash: `, descriptionHash);
   });
 
   it("should allow request for a multiple Voting tokens and delegated to self", async function () {
