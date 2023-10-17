@@ -32,6 +32,14 @@ contract HelpAFrenGov is Governor, GovernorCountingSimple, GovernorStorage, Gove
         return 0;
     }
 
+    function queueProposal(uint256 proposalId) public {
+        super.queue(proposalId);
+    }
+
+    function executeProposal(uint256 proposalId) public {
+        super.execute(proposalId);
+    }
+
     // The following functions are overrides required by Solidity.
 
     function state(uint256 proposalId)
