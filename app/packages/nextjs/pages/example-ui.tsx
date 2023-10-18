@@ -34,6 +34,20 @@ const ExampleUI: NextPage = () => {
   // Treasury
   const { data: treasuryInfo } = useDeployedContractInfo("HelpAFrenTreasury");
 
+  // Plea For Help
+  const [pleaReason, setPleaReason] = useState("");
+  const [pleaUse, setPleaUse] = useState("");
+  // const [pleaMessage, setPleaMessage] = useState("");
+
+  // Proposal
+  const [proposalSubmitter, setProposalSubmitter] = useState("");
+  const [proposalWallet, setProposalWallet] = useState("");
+  const [proposalTitle, setProposalTitle] = useState("");
+  const [proposalRecipient, setProposalRecipient] = useState("");
+  // const [proposalReason, setProposalReason] = useState("");
+  // const [proposalUse, setProposalUse] = useState("");
+  const [proposalAmount, setProposalAmount] = useState("");
+
   // Voting Token
   const { data: nftBalance } = useScaffoldContractRead({
     contractName: "HelpAFrenVoteToken",
@@ -155,13 +169,23 @@ const ExampleUI: NextPage = () => {
               <label className="label">
                 <span className="label-text">Reason for initiating a Plea For Help?</span>
               </label>
-              <input type="text" placeholder="a natural disaster, medical misfortune, etc." className="input input-bordered w-full max-w-xs" />
+              <input 
+                type="text" 
+                placeholder="a natural disaster, medical misfortune, etc." 
+                className="input input-bordered w-full max-w-xs" 
+                onChange={e => setPleaReason(e.target.value)}
+              />
             </div>
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">How will the money be used?</span>
               </label>
-              <input type="text" placeholder="towards rebuilding" className="input input-bordered w-full max-w-xs" />
+              <input 
+                type="text" 
+                placeholder="towards rebuilding" 
+                className="input input-bordered w-full max-w-xs" 
+                onChange={e => setPleaUse(e.target.value)}
+              />
             </div>
             <div className="form-control">
               <label className="label cursor-pointer">
@@ -184,10 +208,22 @@ const ExampleUI: NextPage = () => {
             <div className="card-actions justify-end">
               <button
                 className="btn btn-accent"
-              >
-                  <span className="loading loading-spinner loading-sm"></span>
-                    Activate <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                >
+                  Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
               </button>
+              {/* <button
+                  className="btn btn-primary rounded-full capitalize font-normal font-white w-24 flex items-center gap-1 hover:gap-2 transition-all tracking-widest"
+                  onClick={() => writeAsync()}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <>
+                      Activate <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                    </>
+                  )}
+                </button> */}
             </div>
           </div>
         </div>
@@ -201,25 +237,41 @@ const ExampleUI: NextPage = () => {
               <label className="label">
                 <span className="label-text">Name</span>
               </label>
-              <input type="text" placeholder="Jane Doe" className="input input-bordered w-full max-w-xs" />
+              <input type="text" 
+                placeholder="Jane Doe" 
+                className="input input-bordered w-full max-w-xs" 
+                onChange={e => setProposalSubmitter(e.target.value)}
+              />
             </div>
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Wallet address funds should be sent to?</span>
               </label>
-              <input type="text" placeholder="0x..." className="input input-bordered w-full max-w-xs" />
+              <input type="text" 
+                placeholder="0x..." 
+                className="input input-bordered w-full max-w-xs" 
+                onChange={e => setProposalWallet(e.target.value)}
+              />
             </div>
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Title, name, or descriptor to refer to proposal as</span>
               </label>
-              <input type="text" placeholder="Park Clean Up" className="input input-bordered w-full max-w-xs" />
+              <input type="text" 
+                placeholder="Park Clean Up" 
+                className="input input-bordered w-full max-w-xs" 
+                onChange={e => setProposalTitle(e.target.value)}
+              />
             </div>
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Who will be the recipent of any approved funds?</span>
               </label>
-              <input type="text" placeholder="Green Park clean up group" className="input input-bordered w-full max-w-xs" />
+              <input type="text" 
+                placeholder="Green Park clean up group" 
+                className="input input-bordered w-full max-w-xs" 
+                onChange={e => setProposalRecipient(e.target.value)}
+              />
             </div>
             <div className="form-control">
               <label className="label">
@@ -237,7 +289,12 @@ const ExampleUI: NextPage = () => {
               <label className="label">
                 <span className="label-text">Amount seeking</span>
               </label>
-              <input type="text" placeholder="$" className="input input-bordered w-full max-w-xs" />
+              <input 
+                type="text" 
+                placeholder="$" 
+                className="input input-bordered w-full max-w-xs" 
+                onChange={e => setProposalAmount(e.target.value)}
+              />
             </div>
             <div className="form-control">
               <label className="label cursor-pointer">
