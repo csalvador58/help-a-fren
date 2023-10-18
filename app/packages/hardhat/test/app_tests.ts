@@ -45,7 +45,7 @@ describe("Help A Fren App", function () {
     const HafProposalRegistryContract = (await hafProposalRegistryCF.deploy(
       deployer.address,
     )) as HelpAFrenProposalRegistry;
-    await HafProposalRegistryContract.deployed();
+    await HafProposalRegistryContract.deployTransaction.wait();
 
     // Deploy NFT Voting contract
     const hafVoteTokenCF = await ethers.getContractFactory("HelpAFrenVoteToken");
@@ -53,7 +53,7 @@ describe("Help A Fren App", function () {
       deployer.address,
       deployer.address,
     )) as HelpAFrenVoteToken;
-    await HafVoteTokenContract.deployed();
+    await HafVoteTokenContract.deployTransaction.wait();
 
     // Deploy Timelock contract
     const hafTimelockCF = await ethers.getContractFactory("HelpAFrenTimelock");
@@ -63,7 +63,7 @@ describe("Help A Fren App", function () {
       [deployer.address],
       deployer.address,
     )) as HelpAFrenTimelock;
-    await HafTimelockContract.deployed();
+    await HafTimelockContract.deployTransaction.wait();
 
     // Deploy Governance contract
     const hafGovCF = await ethers.getContractFactory("HelpAFrenGov");
@@ -71,7 +71,7 @@ describe("Help A Fren App", function () {
       HafVoteTokenContract.address,
       HafTimelockContract.address,
     )) as HelpAFrenGov;
-    await HafGovContract.deployed();
+    await HafGovContract.deployTransaction.wait();
 
     // // Set timelock roles
     // await HafTimelockContract.grantRole(await HafTimelockContract.EXECUTOR_ROLE(), HafGovContract.address);
@@ -95,7 +95,7 @@ describe("Help A Fren App", function () {
     // Deploy Treasury contract
     const hafTreasuryCF = await ethers.getContractFactory("HelpAFrenTreasury");
     const HafTreasuryContract = (await hafTreasuryCF.deploy(HafTimelockContract.address)) as HelpAFrenTreasury;
-    await HafTreasuryContract.deployed();
+    await HafTreasuryContract.deployTransaction.wait();
 
     // Send 5000 Ether to Treasury contract
     console.log(

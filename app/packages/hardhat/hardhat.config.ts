@@ -24,6 +24,7 @@ const config: HardhatUserConfig = {
         // https://docs.soliditylang.org/en/latest/using-the-compiler.html#optimizer-options
         runs: 200,
       },
+      evmVersion: "paris",
     },
   },
   defaultNetwork: "localhost",
