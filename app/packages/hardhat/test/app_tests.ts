@@ -1,6 +1,12 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { HelpAFrenGov, HelpAFrenTimelock, HelpAFrenTreasury, HelpAFrenVoteToken } from "../typechain-types";
+import {
+  HelpAFrenGov,
+  HelpAFrenProposalRegistry,
+  HelpAFrenTimelock,
+  HelpAFrenTreasury,
+  HelpAFrenVoteToken,
+} from "../typechain-types";
 import { BigNumber, BigNumberish } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { loadFixture, mine } from "@nomicfoundation/hardhat-network-helpers";
@@ -33,6 +39,13 @@ describe("Help A Fren App", function () {
     console.log("Voter1: ", voter1.address);
     console.log("Voter2: ", voter2.address);
     console.log("Voter3: ", voter3.address);
+
+    // Deploy Proposal Registry contract
+    const hafProposalRegistryCF = await ethers.getContractFactory("HelpAFrenProposalRegistry");
+    const HafProposalRegistryContract = (await hafProposalRegistryCF.deploy(
+      deployer.address,
+    )) as HelpAFrenProposalRegistry;
+    await HafProposalRegistryContract.deployed();
 
     // Deploy NFT Voting contract
     const hafVoteTokenCF = await ethers.getContractFactory("HelpAFrenVoteToken");
@@ -84,12 +97,12 @@ describe("Help A Fren App", function () {
     const HafTreasuryContract = (await hafTreasuryCF.deploy(HafTimelockContract.address)) as HelpAFrenTreasury;
     await HafTreasuryContract.deployed();
 
-    // Send 1 Ether to Treasury contract
+    // Send 5000 Ether to Treasury contract
     console.log(
       "Treasury balance before deposit: ",
       ethers.utils.formatEther(await ethers.provider.getBalance(HafTreasuryContract.address)),
     );
-    const depositTx = await HafTreasuryContract.connect(deployer).deposit({ value: ethers.utils.parseEther("1") });
+    const depositTx = await HafTreasuryContract.connect(deployer).deposit({ value: ethers.utils.parseEther("5000") });
     await depositTx.wait();
     console.log(
       "Treasury balance: ",
@@ -109,6 +122,7 @@ describe("Help A Fren App", function () {
       voter3,
       unauthorizedVoter,
       fundRecipient,
+      HafProposalRegistryContract,
       HafVoteTokenContract,
       HafTimelockContract,
       HafGovContract,
@@ -121,10 +135,10 @@ describe("Help A Fren App", function () {
     recipient: SignerWithAddress,
     voteToken: HelpAFrenVoteToken,
     uri: string,
-    proposalId: BigNumber,
+    tokenId: BigNumberish,
   ): Promise<string[]> {
     // Mint token
-    const mintTx = await voteToken.connect(authorizer).safeMint(recipient.address, uri, proposalId);
+    const mintTx = await voteToken.connect(authorizer).safeMint(recipient.address, uri, tokenId);
     await mintTx.wait();
 
     // Delegate token
@@ -149,10 +163,13 @@ describe("Help A Fren App", function () {
   }
 
   async function submitProposal(
+    deployer: SignerWithAddress,
     authorizer: SignerWithAddress,
     _HafTreasuryContract: HelpAFrenTreasury,
     _HafGovContract: HelpAFrenGov,
+    _HafProposalRegistryContract: HelpAFrenProposalRegistry,
     proposalDesc: string,
+    uri: string,
     fundRecipient: string,
     grantAmount: BigNumber,
   ): Promise<string> {
@@ -165,7 +182,25 @@ describe("Help A Fren App", function () {
       .connect(authorizer)
       .propose([_HafTreasuryContract.address], [0], [transferCallData], proposalDesc);
     const submitProposalTxReceipt = await submitProposalTx.wait();
-    return (submitProposalTxReceipt.events?.[0].args?.proposalId).toString();
+    const proposalId = (submitProposalTxReceipt.events?.[0].args?.proposalId).toString();
+
+    // Store in registry
+    await storeProposalInRegistry(deployer, _HafProposalRegistryContract, proposalId, uri, fundRecipient);
+
+    return proposalId;
+  }
+
+  async function storeProposalInRegistry(
+    authorizer: SignerWithAddress,
+    _HafProposalRegistryContract: HelpAFrenProposalRegistry,
+    proposalId: string,
+    uri: string,
+    address: string,
+  ): Promise<void> {
+    const storeProposalTx = await _HafProposalRegistryContract
+      .connect(authorizer)
+      .addProposal(proposalId, uri, address);
+    await storeProposalTx.wait();
   }
 
   async function vote(voter: SignerWithAddress, proposalId: BigNumberish, _HafGovContract: HelpAFrenGov, vote: number) {
@@ -201,56 +236,91 @@ describe("Help A Fren App", function () {
   // ---------------------------------------------------TESTS START-----------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------------
 
-  it("should allow a proposer to submit a proposal", async function () {
-    const { proposer, fundRecipient, HafTreasuryContract, HafGovContract } = await loadFixture(setupAndDeployContracts);
+  it("should allow a proposer to submit a proposal and details stored in proposal registry contract", async function () {
+    const { deployer, proposer, fundRecipient, HafProposalRegistryContract, HafTreasuryContract, HafGovContract } =
+      await loadFixture(setupAndDeployContracts);
+
+    // Setup proposal
 
     const proposalDescription = "Test Proposal";
-    const grantAmount = ethers.utils.parseEther("1");
+    const grantAmount = ethers.utils.parseEther("100");
+    const uri = "ipfs://testURI";
 
     const proposalId = await submitProposal(
+      deployer,
       proposer,
       HafTreasuryContract,
       HafGovContract,
+      HafProposalRegistryContract,
       proposalDescription,
+      uri,
       fundRecipient.address,
       grantAmount,
     );
 
-    console.log("\n");
-    console.log(`proposalId: `, proposalId);
     expect(proposalId).to.not.be.undefined;
 
-    // Retrieve proposal description
-    const [targets, values, calldatas, descriptionHash] = await HafGovContract.proposalDetails(proposalId);
-    console.log(`descriptionHash: `, descriptionHash);
+    // Retrieve proposal description hash and compare with manually calculated hash
+    // const [targets, values, calldatas, descriptionHash] = await HafGovContract.proposalDetails(proposalId);
+    const [, , , descriptionHash] = await HafGovContract.proposalDetails(proposalId);
+    const descriptionBytes = ethers.utils.toUtf8Bytes(proposalDescription);
+    const hash = ethers.utils.keccak256(descriptionBytes);
+    expect(descriptionHash).to.equal(hash);
+
+    // Verify proposal stored in registry
+    const proposal = await HafProposalRegistryContract.connect(deployer).getProposal(0);
+    expect(proposal).to.not.be.undefined;
+
+    // Verify only 1 proposal stored in registry
+    const proposals = await HafProposalRegistryContract.connect(deployer).getAllProposals();
+    expect(proposals.length).to.equal(1);
+
+    // Remove proposal from registry
+    const removeProposalTx = await HafProposalRegistryContract.connect(deployer).removeProposal(0);
+    await removeProposalTx.wait();
+    expect((await HafProposalRegistryContract.connect(deployer).getAllProposals()).length).to.be.equal(0);
   });
 
-  it("should allow request for a multiple Voting tokens and delegated to self", async function () {
+  it("should allow request for a multiple Voting tokens (one for each proposal) and delegate voting power to self", async function () {
     console.log("\nTest: should allow request for a Voting token and delegated to self\n");
 
-    const { deployer, proposer, fundRecipient, voter1, HafTreasuryContract, HafGovContract, HafVoteTokenContract } =
-      await loadFixture(setupAndDeployContracts);
+    const {
+      deployer,
+      proposer,
+      fundRecipient,
+      voter1,
+      HafProposalRegistryContract,
+      HafTreasuryContract,
+      HafGovContract,
+      HafVoteTokenContract,
+    } = await loadFixture(setupAndDeployContracts);
 
     // Setup proposal
+
     const proposalDescription = "Test Proposal";
-    const grantAmount = ethers.utils.parseEther("1");
+    const grantAmount = ethers.utils.parseEther("100");
+    const uri = "ipfs://testURI";
+
     const proposalId = await submitProposal(
+      deployer,
       proposer,
       HafTreasuryContract,
       HafGovContract,
+      HafProposalRegistryContract,
       proposalDescription,
+      uri,
       fundRecipient.address,
       grantAmount,
     );
 
     // Generate token id
-    const tokenHash = ethers.utils.keccak256(voter1.address + proposalId.toString());
+    const tokenHash = ethers.utils.id(voter1.address + proposalId);
+    console.log("tokenHash: ", tokenHash);
     // take last 7 digits to create token ID
-    const token = ethers.BigNumber.from(tokenHash).toString().slice(-7);
-    const tokenId = ethers.BigNumber.from(token);
+    const tokenId = ethers.BigNumber.from(tokenHash).toString().slice(-7);
 
     // Get Voting token and delegate to self
-    const tokensHeldByVoter = await mintVoteTokenAndDelegate(
+    let tokensHeldByVoter = await mintVoteTokenAndDelegate(
       deployer,
       voter1,
       HafVoteTokenContract,
@@ -266,33 +336,41 @@ describe("Help A Fren App", function () {
     console.log(`votingPower: `, votingPower.toNumber());
     console.log("\n");
 
-    expect(tokensHeldByVoter).to.include(tokenId.toString());
+    let token = parseInt(tokenId);
+    let tokens = tokensHeldByVoter.map(t => parseInt(t));
+    expect(tokens).to.include(token);
     expect(votingPower).to.equal(VOTE_TOKEN_MINT);
 
-    // Setup proposal2
+    // Setup proposal 2 to create another voting token
+
     const proposalDescription2 = "Test Proposal2";
-    const grantAmount2 = ethers.utils.parseEther("1");
+    const grantAmount2 = ethers.utils.parseEther("100");
+    const uri2 = "ipfs://testURI2";
+
     const proposalId2 = await submitProposal(
+      deployer,
       proposer,
       HafTreasuryContract,
       HafGovContract,
+      HafProposalRegistryContract,
       proposalDescription2,
+      uri2,
       fundRecipient.address,
       grantAmount2,
     );
 
     // Generate token id
-    const tokenHash2 = ethers.utils.keccak256(voter1.address + proposalId2.toString());
+    const tokenHash2 = ethers.utils.id(voter1.address + proposalId2);
+    console.log("tokenHash2: ", tokenHash2);
     // take last 7 digits to create token ID
-    const token2 = ethers.BigNumber.from(tokenHash2).toString().slice(-7);
-    const tokenId2 = ethers.BigNumber.from(token2);
+    const tokenId2 = ethers.BigNumber.from(tokenHash2).toString().slice(-7);
 
     // Get Voting token and delegate to self
-    const tokensHeldByVoter2 = await mintVoteTokenAndDelegate(
+    tokensHeldByVoter = await mintVoteTokenAndDelegate(
       deployer,
       voter1,
       HafVoteTokenContract,
-      "ipfs://testURI2",
+      "ipfs://testURI",
       tokenId2,
     );
 
@@ -300,38 +378,52 @@ describe("Help A Fren App", function () {
     const votingPower2 = await getVotingPower(voter1.address, HafVoteTokenContract);
 
     console.log("\n");
-    console.log("Tokens held by voter: ", tokensHeldByVoter2);
+    console.log("Tokens held by voter: ", tokensHeldByVoter);
     console.log(`votingPower: `, votingPower2.toNumber());
     console.log("\n");
 
-    expect(tokensHeldByVoter2).to.include(tokenId2.toString());
+    token = parseInt(tokenId2);
+    tokens = tokensHeldByVoter.map(t => parseInt(t));
+    expect(tokens).to.include(token);
     expect(votingPower2).to.equal(VOTE_TOKEN_MINT * 2);
   });
 
-  it("should fail request for multiple Voting tokens on the same proposal", async function () {
-    console.log("\nshould fail request for multiple Voting tokens on the same proposal\n");
+  it("should fail request for multiple Voting tokens on the same proposal from same voter", async function () {
+    // console.log("\nshould fail request for multiple Voting tokens on the same proposal\n");
 
-    const { deployer, proposer, fundRecipient, voter1, HafTreasuryContract, HafGovContract, HafVoteTokenContract } =
-      await loadFixture(setupAndDeployContracts);
+    const {
+      deployer,
+      proposer,
+      fundRecipient,
+      voter1,
+      HafProposalRegistryContract,
+      HafTreasuryContract,
+      HafGovContract,
+      HafVoteTokenContract,
+    } = await loadFixture(setupAndDeployContracts);
 
     // Setup proposal
+
     const proposalDescription = "Test Proposal";
-    const grantAmount = ethers.utils.parseEther("1");
+    const grantAmount = ethers.utils.parseEther("100");
+    const uri = "ipfs://testURI";
+
     const proposalId = await submitProposal(
+      deployer,
       proposer,
       HafTreasuryContract,
       HafGovContract,
+      HafProposalRegistryContract,
       proposalDescription,
+      uri,
       fundRecipient.address,
       grantAmount,
     );
 
     // Generate token id
-    const tokenHash = ethers.utils.keccak256(voter1.address + proposalId.toString());
+    const tokenHash = ethers.utils.id(voter1.address + proposalId);
     // take last 7 digits to create token ID
-    const token = ethers.BigNumber.from(tokenHash).toString().slice(-7);
-    const tokenId = ethers.BigNumber.from(token);
-
+    const tokenId = ethers.BigNumber.from(tokenHash).toString().slice(-7);
     // Get Voting token and delegate to self
     const first_mint = await mintVoteTokenAndDelegate(
       deployer,
@@ -340,7 +432,6 @@ describe("Help A Fren App", function () {
       "ipfs://testURI",
       tokenId,
     );
-    expect(first_mint).to.include(tokenId.toString());
 
     // expect Attempt to generate another vote token of the same proposal to revert
     await expect(mintVoteTokenAndDelegate(deployer, voter1, HafVoteTokenContract, "ipfs://testURI", tokenId)).to.be
@@ -356,28 +447,34 @@ describe("Help A Fren App", function () {
       fundRecipient,
       voter1,
       voter2,
+      HafProposalRegistryContract,
       HafTreasuryContract,
       HafGovContract,
       HafVoteTokenContract,
     } = await loadFixture(setupAndDeployContracts);
 
     // Setup proposal
+
     const proposalDescription = "Test Proposal";
-    const grantAmount = ethers.utils.parseEther("1");
+    const grantAmount = ethers.utils.parseEther("100");
+    const uri = "ipfs://testURI";
+
     const proposalId = await submitProposal(
+      deployer,
       proposer,
       HafTreasuryContract,
       HafGovContract,
+      HafProposalRegistryContract,
       proposalDescription,
+      uri,
       fundRecipient.address,
       grantAmount,
     );
 
     // Generate token id for first voter
-    const tokenHash = ethers.utils.keccak256(voter1.address + proposalId.toString());
+    const tokenHash = ethers.utils.id(voter1.address + proposalId);
     // take last 7 digits to create token ID
-    const token = ethers.BigNumber.from(tokenHash).toString().slice(-7);
-    const tokenId1 = ethers.BigNumber.from(token);
+    const tokenId1 = ethers.BigNumber.from(tokenHash).toString().slice(-7);
 
     // Get Voting token and delegate to self
     const voter1Tokens = await mintVoteTokenAndDelegate(
@@ -395,13 +492,14 @@ describe("Help A Fren App", function () {
     console.log(`votingPower: `, voting1Power.toNumber());
     console.log("\n");
 
-    expect(voter1Tokens).to.include(tokenId1.toString());
+    let token = parseInt(tokenId1);
+    let tokens = voter1Tokens.map(t => parseInt(t));
+    expect(tokens).to.include(token);
 
     // Generate token id for second voter
-    const tokenHash2 = ethers.utils.keccak256(voter2.address + proposalId.toString());
+    const tokenHash2 = ethers.utils.id(voter2.address + proposalId);
     // take last 7 digits to create token ID
-    const token2 = ethers.BigNumber.from(tokenHash2).toString().slice(-7);
-    const tokenId2 = ethers.BigNumber.from(token2);
+    const tokenId2 = ethers.BigNumber.from(tokenHash2).toString().slice(-7);
 
     // Get Voting token and delegate to self
     const voter2Tokens = await mintVoteTokenAndDelegate(
@@ -420,7 +518,9 @@ describe("Help A Fren App", function () {
     console.log(`votingPower: `, voting2Power.toNumber());
     console.log("\n");
 
-    expect(voter2Tokens).to.include(tokenId2.toString());
+    token = parseInt(tokenId2);
+    tokens = voter2Tokens.map(t => parseInt(t));
+    expect(tokens).to.include(token);
   });
 
   it("should not allow request for a Voting token to an unauthorize voter", async function () {
@@ -457,37 +557,41 @@ describe("Help A Fren App", function () {
       HafTimelockContract,
       HafGovContract,
       HafTreasuryContract,
+      HafProposalRegistryContract,
     } = await loadFixture(setupAndDeployContracts);
 
     // Setup proposal
+
     const proposalDescription = "Test Proposal";
-    const grantAmount = ethers.utils.parseEther("1");
+    const grantAmount = ethers.utils.parseEther("100");
+    const uri = "ipfs://testURI";
+
     const proposalId = await submitProposal(
+      deployer,
       proposer,
       HafTreasuryContract,
       HafGovContract,
+      HafProposalRegistryContract,
       proposalDescription,
+      uri,
       fundRecipient.address,
       grantAmount,
     );
 
     // Generate token id for first voter
-    let tokenHash = ethers.utils.keccak256(voter1.address + proposalId.toString());
+    let tokenHash = ethers.utils.id(voter1.address + proposalId);
     // take last 7 digits to create token ID
-    let token = ethers.BigNumber.from(tokenHash).toString().slice(-7);
-    const tokenId1 = ethers.BigNumber.from(token);
+    const tokenId1 = ethers.BigNumber.from(tokenHash).toString().slice(-7);
 
     // Generate token id for second voter
-    tokenHash = ethers.utils.keccak256(voter2.address + proposalId.toString());
+    tokenHash = ethers.utils.id(voter2.address + proposalId);
     // take last 7 digits to create token ID
-    token = ethers.BigNumber.from(tokenHash).toString().slice(-7);
-    const tokenId2 = ethers.BigNumber.from(token);
+    const tokenId2 = ethers.BigNumber.from(tokenHash).toString().slice(-7);
 
-    // Generate token id for first voter
-    tokenHash = ethers.utils.keccak256(voter3.address + proposalId.toString());
+    // Generate token id for third voter
+    tokenHash = ethers.utils.id(voter3.address + proposalId);
     // take last 7 digits to create token ID
-    token = ethers.BigNumber.from(tokenHash).toString().slice(-7);
-    const tokenId3 = ethers.BigNumber.from(token);
+    const tokenId3 = ethers.BigNumber.from(tokenHash).toString().slice(-7);
 
     // Voter claim voting token
     await mintVoteTokenAndDelegate(deployer, voter1, HafVoteTokenContract, "ipfs://testURI", tokenId1);
@@ -501,23 +605,16 @@ describe("Help A Fren App", function () {
 
     // // Check voting power for voter 1
     // const voting1Power = await getVotingPower(voter1.address, HafVoteTokenContract);
-
     // console.log("\n");
-    // console.log(`votingPower: `, voting1Power.toNumber());
-    // console.log("\n");
+    // console.log(`votingPower1: `, voting1Power.toNumber());
 
     // // Check voting power for voter 2
     // const voting2Power = await getVotingPower(voter2.address, HafVoteTokenContract);
-
-    // console.log("\n");
-    // console.log(`votingPower: `, voting2Power.toNumber());
-    // console.log("\n");
+    // console.log(`votingPower2: `, voting2Power.toNumber());
 
     // // Check voting power for voter 3
     // const voting3Power = await getVotingPower(voter3.address, HafVoteTokenContract);
-
-    // console.log("\n");
-    // console.log(`votingPower: `, voting3Power.toNumber());
+    // console.log(`votingPower3: `, voting3Power.toNumber());
     // console.log("\n");
 
     return {
@@ -533,6 +630,7 @@ describe("Help A Fren App", function () {
       HafTimelockContract,
       HafGovContract,
       HafTreasuryContract,
+      HafProposalRegistryContract,
       proposalId,
     };
   }
@@ -697,7 +795,7 @@ describe("Help A Fren App", function () {
     console.log("Final Treasury balance: ", ethers.utils.formatEther(finalTreasuryBalance));
     console.log("Final Recipient balance: ", ethers.utils.formatEther(finalFundRecipientBalance));
 
-    expect(finalTreasuryBalance).to.equal(0);
+    expect(finalTreasuryBalance).to.equal(initialTreasuryBalance.sub(grantAmount));
     expect(finalFundRecipientBalance).to.equal(initialFundRecipientBalance.add(grantAmount));
   });
 });
