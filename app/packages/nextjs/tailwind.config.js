@@ -116,5 +116,11 @@ module.exports = {
         zoom: "zoom 1s ease infinite",
       },
     },
+    padding: {
+      sm: '8px',
+      md: '16px',
+      lg: '24px',
+      xl: '48px',
+     },
   },
 };
