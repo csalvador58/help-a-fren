@@ -15,7 +15,7 @@ import {
   useScaffoldContractRead,
   useScaffoldContractWrite,
 } from "~~/hooks/scaffold-eth";
-import { MagicLogin } from "~~/utils/MagicLogin";
+import { MagicLogin } from "~~/components/help-a-fren/utils/MagicLogin";
 import { TEST_WALLET } from "~~/utils/constants";
 
 const ExampleUI: NextPage = () => {

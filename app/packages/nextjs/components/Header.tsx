@@ -52,6 +52,12 @@ export const Header = () => {
         </NavLink>
       </li>
       <li>
+        <NavLink href="/test-page">
+          <SparklesIcon className="h-4 w-4" />
+          Test Page
+        </NavLink>
+      </li>
+      <li>
         <NavLink href="/blockexplorer">
           <MagnifyingGlassIcon className="h-4 w-4" />
           Block Explorer

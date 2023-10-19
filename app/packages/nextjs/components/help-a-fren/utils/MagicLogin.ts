@@ -1,7 +1,8 @@
 import { RPCError, RPCErrorCode } from "magic-sdk";
 import { Magic } from "magic-sdk";
 
-export const MagicLogin = async () => {
+export const MagicLogin = async (option: boolean) => {
+  console.log("MagicLogin: ", option);
   try {
     if (typeof window !== "undefined") {
       const MAGIC = new Magic(process.env.NEXT_PUBLIC_MAGIC_API_KEY!, {
@@ -11,17 +12,13 @@ export const MagicLogin = async () => {
         },
       });
 
-      const email = ""; // Set to empty string to force Magic to show UI
-      if (!!email && !!MAGIC) {
-        // console.log('Logging in Magic with email: ', email);
-        const response = await MAGIC.auth.loginWithEmailOTP({ email: email });
-        // console.log("response: ", response);
-        return { response, MAGIC };
+      if (!option) {
+        await MAGIC.user.logout();
       } else {
-        const response = await MAGIC.wallet.connectWithUI();
-        // console.log("response: ", response);
-        return { response, MAGIC };
+        await MAGIC.wallet.connectWithUI();
+        return MAGIC;
       }
+      return MAGIC;
     } else {
       console.log("Magic not available");
       return null;
