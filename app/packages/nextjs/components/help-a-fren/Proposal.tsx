@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   HAF_GOVERNOR_ADDRESS,
-  HAF_NFT_VOTING_ADDRESS,
   HAF_PROPOSAL_REGISTRY_ADDRESS,
   HAF_TREASURY_ADDRESS,
 } from "../../../hardhat/utils/constants";
@@ -9,7 +8,6 @@ import { NFT_IMAGE_CID } from "../../utils/constants";
 import hafGovAbi from "./abi/hafGovAbi.json";
 import hafProposalRegistryAbi from "./abi/hafProposalRegistryAbi.json";
 import hafTreasuryAbi from "./abi/hafTreasuryAbi.json";
-import hafVoteTokenAbi from "./abi/hafVoteTokenAbi.json";
 import { BiconomySmartAccount } from "./utils/BiconomySA";
 import { MagicLogin } from "./utils/MagicLogin";
 import { getProposalIdFromTx } from "./utils/getProposalIdFromTx";
@@ -128,6 +126,9 @@ const HafProposal = ({
       const hashedProposalDetails = ethers.utils.keccak256(encodedProposalDetails);
       console.log("**** hashedProposalDetails: ", hashedProposalDetails);
 
+      // ==========================================================
+      // Setup Biconnomy Smart Account with Magic signer
+      // ==========================================================
       // Get magic instance
       const magic = await MagicLogin(true);
       setMagicActive(true);
