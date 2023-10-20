@@ -28,9 +28,19 @@ h2 {
   margin-top: 1rem;
 }
 
+h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;
+}
+
 p {
   margin: 1rem 0;
   font-size: 1rem;
+}
+
+p.small-text {
+  font-size: 0.75rem;
 }
 
 .btn {
@@ -58,6 +68,20 @@ button:focus {
 .haf-card-body {
   padding: 0 !important;
   /* border-radius: 30px !important; */
+}
+
+.haf-card-body .grid .nested-card-wrapper {
+  padding: 1rem;
+}
+
+.haf-card-body .grid .nested-card-wrapper .nested-card {
+  padding: 1rem 2rem;
+  border-radius: 15px;
+  box-shadow: 0px 3px 15px #C3BEBE;
+}
+
+.haf-card-body .grid .nested-card-wrapper .nested-card .stat {
+  padding: 0;
 }
 
 .card-title h2 {
