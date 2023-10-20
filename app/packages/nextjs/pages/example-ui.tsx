@@ -161,6 +161,44 @@ const ExampleUI: NextPage = () => {
             </div>
           </div>
 
+          {/* Donations */}
+          <div className="card w-full bg-base-100 shadow-xl">
+            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[55%_45%]">
+              <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+                <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
+              </div>
+              <div className="grid gap-5 p-md">
+                <div className="card-header-wrapper place-self-center">
+                  <div className="card-header max-w-lg">
+                    <h2 className="card-title justify-center">Donations</h2>
+                    <p className="text-center max-w-lg justify-center">The fires in West Maui have devastated Lahaina and surrounding communities. Please Help-A-Fren and consider donating to this historical piece of Hawaiian history. Your generosity will go towards helping the local residents begin to rebuild their lives.</p>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-lg">
+                    <p className=" inline-flex">Location</p>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                  </div>
+                  <div className="text-lg">
+                    <p className="inline-flex">Wallet</p>
+                    <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex break-all">0x999999999abcdefghijklmnop</div>
+                    <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                  </div>
+                </div>
+                <div className="card-actions my-md grid grid-cols-2 gap-6">
+                  <button className="btn btn-accent outline-none">$25</button>
+                  <button className="btn btn-accent outline-none">$50</button>
+                  <button className="btn btn-accent outline-none">$100</button>
+                  <button className="btn btn-accent outline-none">$500</button>
+                  <button className="btn btn-accent outline-none">Other</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Plea For Help */}
           <div className="card w-full bg-base-100 shadow-xl">
             <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
