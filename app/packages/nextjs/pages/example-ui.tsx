@@ -17,6 +17,8 @@ import {
 } from "~~/hooks/scaffold-eth";
 import { MagicLogin } from "~~/utils/MagicLogin";
 import { TEST_WALLET } from "~~/utils/constants";
+import { TREASURY_WALLET } from "~~/utils/constants";
+import { log } from "console";
 
 const ExampleUI: NextPage = () => {
   // const { data: totalCounter } = useScaffoldContractRead({
@@ -31,6 +33,7 @@ const ExampleUI: NextPage = () => {
   const [magicLogin, setMagicLogin] = useState<any>(null);
   const [magicAddress, setMagicAddress] = useState<string>("");
   const [isDisabled, setDisabled] = useState(false);
+  const [btnActive, setBtnActive] = useState(null);
 
   // Treasury
   const { data: treasuryInfo } = useDeployedContractInfo("HelpAFrenTreasury");
@@ -98,6 +101,21 @@ const ExampleUI: NextPage = () => {
     const magicResponse: MagicUserMetadata = await magic.user.getMetadata();
     if (magicResponse.publicAddress) setMagicAddress(magicResponse.publicAddress);
   };
+
+  const setBtnActiveHandler = (button:any) => {
+    console.log("Target", button.target.id)
+    setBtnActive(button.target.id);
+    console.log("Value", button.target.value)
+    console.log(button)
+  }
+  console.log("Working", btnActive)
+  const buttons = [
+    {id:1, text:`$25`, value:25},
+    {id:2, text:`$50`, value:50},
+    {id:3, text:`$100`, value:100},
+    {id:4, text:`$500`, value:500},
+    {id:5, text:`Other`, value:0}
+  ]
 
   return (
     <>
@@ -184,16 +202,21 @@ const ExampleUI: NextPage = () => {
                   </div>
                   <div className="text-lg">
                     <p className="inline-flex">Wallet</p>
-                    <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex break-all">0x999999999abcdefghijklmnop</div>
-                    <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                    <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
                   </div>
                 </div>
                 <div className="card-actions my-md grid grid-cols-2 gap-6">
-                  <button className="btn btn-accent outline-none">$25</button>
-                  <button className="btn btn-accent outline-none">$50</button>
-                  <button className="btn btn-accent outline-none">$100</button>
-                  <button className="btn btn-accent outline-none">$500</button>
-                  <button className="btn btn-accent outline-none">Other</button>
+                  {buttons.map((button) => (
+                    <button 
+                      key={button.id} 
+                      id={button.id.toString()}
+                      className={btnActive == button.id ? `btn btn-success outline-none text-accent shadow-xl` : 'btn btn-neutral outline-none text-accent shadow-xl'}
+                      onClick={(e) => setBtnActiveHandler(e)}
+                      value={button.value}
+                      >
+                        {button.text}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -213,8 +236,7 @@ const ExampleUI: NextPage = () => {
                 </div>
                 <div className="text-lg">
                   <p className="inline-flex">Wallet</p>
-                  <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex break-all">0x999999999abcdefghijklmnop</div>
-                  <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
                 </div>
               </div>
               <div className="grid gap-5 p-md">
@@ -266,21 +288,8 @@ const ExampleUI: NextPage = () => {
                   <button
                     className="btn btn-accent outline-none"
                     >
-                      Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                      Submit
                   </button>
-                  {/* <button
-                      className="btn btn-primary rounded-full capitalize font-normal font-white w-24 flex items-center gap-1 hover:gap-2 transition-all tracking-widest"
-                      onClick={() => writeAsync()}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <span className="loading loading-spinner loading-sm"></span>
-                      ) : (
-                        <>
-                          Activate <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-                        </>
-                      )}
-                    </button> */}
                 </div>
               </div>
             </div>
@@ -300,8 +309,7 @@ const ExampleUI: NextPage = () => {
                 </div>
                 <div className="text-lg">
                   <p className="inline-flex">Wallet</p>
-                  <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex break-all">0x999999999abcdefghijklmnop</div>
-                  <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
                 </div>
               </div>
               <div className="grid gap-5 p-md">
@@ -409,14 +417,13 @@ const ExampleUI: NextPage = () => {
                 </div>
                 <div className="text-lg">
                   <p className="inline-flex">Wallet</p>
-                  <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex break-all">0x999999999abcdefghijklmnop</div>
-                  <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
                 </div>
               </div>
               <div className="grid gap-5 p-md">
                 <div className="card-header-wrapper place-self-center">
                   <div className="card-header max-w-lg">
-                    <h2 className="card-title justify-center">Vote</h2>
+                    <h2 className="card-title justify-center">Vote For A Fren</h2>
                     <p className="text-center max-w-lg justify-center">You must be a verifiable resident or business owner in the aforementioned area in order to successfully cast votes. Be sure to submit each proposal vote in order for it to count.</p>
                   </div>
                 </div>
@@ -518,8 +525,7 @@ const ExampleUI: NextPage = () => {
                 </div>
                 <div className="text-lg">
                   <p className="inline-flex">Wallet</p>
-                  <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex break-all">0x999999999abcdefghijklmnop</div>
-                  <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
                 </div>
               </div>
               <div className="grid gap-5 p-md">
@@ -532,24 +538,24 @@ const ExampleUI: NextPage = () => {
                 <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
                   <div className="form-control nested-card bg-light">
                     <div className="stat my-0 place-items-end">
-                      <div className="stat-value">$20,000</div>
+                      <div className="stat-value text-accent">$20,000</div>
                       <div className="stat-desc">Asking</div>
                     </div>
                     <p className="small-text">Proposal 1</p>
-                    <h3>Title</h3>
+                    <h3 className="text-accent">Title</h3>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
                     <div className="w-full text-center">
-                      <p className="inline-flex">Approved and Sent</p>
-                      <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                      <p className="inline-flex text-accent">Approved and Sent</p>
+                      <a href={`https://mumbai.polygonscan.com/address/${TEST_WALLET}`} target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
                     </div>
                   </div>
                   <div className="form-control nested-card">
                     <div className="stat my-0 place-items-end">
-                      <div className="stat-value">$50,000</div>
+                      <div className="stat-value text-accent">$50,000</div>
                       <div className="stat-desc">Asking</div>
                     </div>
                     <p className="small-text">Proposal 2</p>
-                    <h3>Title</h3>
+                    <h3 className="text-accent">Title</h3>
                     <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
                     <div className="w-full flex flex-row text-center">
                       <p>Active</p>
@@ -557,11 +563,11 @@ const ExampleUI: NextPage = () => {
                   </div>
                   <div className="form-control nested-card">
                     <div className="stat my-0 place-items-end">
-                      <div className="stat-value">Unlimited</div>
+                      <div className="stat-value text-accent">Unlimited</div>
                       <div className="stat-desc">Asking</div>
                     </div>
                     <p className="small-text">Proposal 3</p>
-                    <h3>Title</h3>
+                    <h3 className="text-accent">Title</h3>
                     <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
                     <div className="w-full flex flex-row text-center">
                       <p>Active</p>
