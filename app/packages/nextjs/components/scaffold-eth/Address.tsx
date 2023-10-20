@@ -77,24 +77,24 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
 
   return (
     <div className="flex items-center">
-      <div className="flex-shrink-0">
+      {/* <div className="flex-shrink-0">
         <BlockieAvatar
           address={address}
           ensImage={ensAvatar}
           size={(blockieSizeMap[size] * 24) / blockieSizeMap["base"]}
         />
-      </div>
+      </div> */}
       {disableAddressLink ? (
         <span className={`ml-1.5 text-${size} font-normal`}>{displayAddress}</span>
       ) : getTargetNetwork().id === hardhat.id ? (
-        <span className={`ml-1.5 text-${size} font-normal`}>
-          <Link href={blockExplorerAddressLink}>{displayAddress}</Link>
+        <span className={`ml-1.5 text-${size} font-normal text-sm badge badge-md badge-accent badge-outline ml-xs`}>
+          <Link href={`https://mumbai.polygonscan.com/address/${address}`} target="_blank">{displayAddress}</Link>
         </span>
       ) : (
         <a
           className={`ml-1.5 text-${size} font-normal`}
           target="_blank"
-          href={blockExplorerAddressLink}
+          href={`https://mumbai.polygonscan.com/address/${address}`}
           rel="noopener noreferrer"
         >
           {displayAddress}
@@ -106,20 +106,22 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
           aria-hidden="true"
         />
       ) : (
-        <CopyToClipboard
-          text={address}
-          onCopy={() => {
-            setAddressCopied(true);
-            setTimeout(() => {
-              setAddressCopied(false);
-            }, 800);
-          }}
-        >
-          <DocumentDuplicateIcon
-            className="ml-1.5 text-xl font-normal text-sky-600 h-5 w-5 cursor-pointer"
-            aria-hidden="true"
-          />
-        </CopyToClipboard>
+        <div className="ml-sm">
+          <CopyToClipboard
+            text={address}
+            onCopy={() => {
+              setAddressCopied(true);
+              setTimeout(() => {
+                setAddressCopied(false);
+              }, 800);
+            }}
+          >
+            <DocumentDuplicateIcon
+              className="ml-1.5 text-xl font-normal text-sky-600 h-5 w-5 cursor-pointer"
+              aria-hidden="true"
+            />
+          </CopyToClipboard>
+        </div>
       )}
     </div>
   );

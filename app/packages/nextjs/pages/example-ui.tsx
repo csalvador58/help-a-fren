@@ -17,6 +17,8 @@ import {
 } from "~~/hooks/scaffold-eth";
 import { MagicLogin } from "~~/components/help-a-fren/utils/MagicLogin";
 import { TEST_WALLET } from "~~/utils/constants";
+import { TREASURY_WALLET } from "~~/utils/constants";
+import { log } from "console";
 
 const ExampleUI: NextPage = () => {
   // const { data: totalCounter } = useScaffoldContractRead({
@@ -30,6 +32,8 @@ const ExampleUI: NextPage = () => {
   }
   const [magicLogin, setMagicLogin] = useState<any>(null);
   const [magicAddress, setMagicAddress] = useState<string>("");
+  const [isDisabled, setDisabled] = useState(false);
+  const [btnActive, setBtnActive] = useState(null);
 
   // Treasury
   const { data: treasuryInfo } = useDeployedContractInfo("HelpAFrenTreasury");
@@ -98,6 +102,21 @@ const ExampleUI: NextPage = () => {
     if (magicResponse.publicAddress) setMagicAddress(magicResponse.publicAddress);
   };
 
+  const setBtnActiveHandler = (button:any) => {
+    console.log("Target", button.target.id)
+    setBtnActive(button.target.id);
+    console.log("Value", button.target.value)
+    console.log(button)
+  }
+  console.log("Working", btnActive)
+  const buttons = [
+    {id:1, text:`$25`, value:25},
+    {id:2, text:`$50`, value:50},
+    {id:3, text:`$100`, value:100},
+    {id:4, text:`$500`, value:500},
+    {id:5, text:`Other`, value:0}
+  ]
+
   return (
     <>
       <MetaHeader
@@ -109,336 +128,453 @@ const ExampleUI: NextPage = () => {
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
       </MetaHeader>
       {/* <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi"> */}
-      <div className="grid lg:grid-cols-2" data-theme="exampleUi">
-        {/* <ContractInteraction /> */}
-        {/* <ContractData /> */}
+      <div className="wrapper p-md justify-center" data-theme="exampleUi">
+        <div className="container grid gap-6 max-w-screen-xl">
+          {/* <ContractInteraction /> */}
+          {/* <ContractData /> */}
 
-        {/* Testing */}
+          {/* Testing */}
 
-        <div className="card w-96 bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Current Account</h2>
-            <Address address={TEST_WALLET} />
-            <p>NFT Balance: {nftBalance?.toString() || "Loading..."}</p>
-            <p>Voting Power: {votingPower?.toString() || "Loading..."}</p>
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title">Current Account</h2>
+              <Address address={TEST_WALLET} />
+              <p>NFT Balance: {nftBalance?.toString() || "Loading..."}</p>
+              <p>Voting Power: {votingPower?.toString() || "Loading..."}</p>
+            </div>
           </div>
-        </div>
 
-        <div className="card w-96 bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Magic</h2>
-            {!magicLogin && (
-              <button className="btn btn-wide btn-accent" onClick={signInWithMagicOTP}>
-                Log Into Magic
-              </button>
-            )}
-            {magicLogin && (
-              <>
-                <p>Logged in with Magic</p>
-                <Address address={magicAddress} />
-                <button className="btn btn-wide btn-accent" onClick={() => magicLogin?.user.logout()}>
-                  Log Out
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title">Magic</h2>
+              {!magicLogin && (
+                <button className="btn btn-wide btn-accent" onClick={signInWithMagicOTP}>
+                  Log Into Magic
                 </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Organizer */}
-
-        {/* Treasury */}
-        <div className="card w-96 bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Treasury Account</h2>
-            <Address address={treasuryInfo?.address} />
-            <div>
-              <div>Treasury Balance: </div>
-              <Balance address={treasuryInfo?.address} className="min-h-0 h-auto" />
-            </div>
-            <div>*Need Deposit Input*</div>
-          </div>
-        </div>
-
-        {/* Plea For Help */}
-        <div className="card w-full bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Plea For Help</h2>
-            <p>Location <span className="ml-5">USA</span><span className="ml-5">Lahaina</span><span className="ml-5">Maui</span><span className="ml-5">96761</span></p>
-            <p>Wallet <span className="ml-5">0xafksfk2356fjklasjflsdjfasf678asjfo6787656safj0912</span></p>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Reason for initiating a Plea For Help?</span>
-              </label>
-              <input 
-                type="text" 
-                placeholder="a natural disaster, medical misfortune, etc." 
-                className="input input-bordered w-full max-w-xs" 
-                onChange={e => setPleaReason(e.target.value)}
-              />
-            </div>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">How will the money be used?</span>
-              </label>
-              <input 
-                type="text" 
-                placeholder="towards rebuilding" 
-                className="input input-bordered w-full max-w-xs" 
-                onChange={e => setPleaUse(e.target.value)}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <span className="label-text">One-Time Campaign</span> 
-                <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <span className="label-text">On-Going Campaign</span> 
-                <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Message prompt to display on Proposal form</span>
-              </label>
-              <textarea className="textarea textarea-bordered h-24" placeholder="Information or instructions you would like proposers to know..."></textarea>
-            </div>
-            <div className="card-actions justify-end">
-              <button
-                className="btn btn-accent"
-                >
-                  Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-              </button>
-              {/* <button
-                  className="btn btn-primary rounded-full capitalize font-normal font-white w-24 flex items-center gap-1 hover:gap-2 transition-all tracking-widest"
-                  onClick={() => writeAsync()}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <span className="loading loading-spinner loading-sm"></span>
-                  ) : (
-                    <>
-                      Activate <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-                    </>
-                  )}
-                </button> */}
+              )}
+              {magicLogin && (
+                <>
+                  <p>Logged in with Magic</p>
+                  <Address address={magicAddress} />
+                  <button className="btn btn-wide btn-accent" onClick={() => magicLogin?.user.logout()}>
+                    Log Out
+                  </button>
+                </>
+              )}
             </div>
           </div>
-        </div>
 
-        {/* Proposer */}
-        <div className="card w-full bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Proposal Form</h2>
-            <p>Message from organizer Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor.</p>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Name</span>
-              </label>
-              <input type="text" 
-                placeholder="Jane Doe" 
-                className="input input-bordered w-full max-w-xs" 
-                onChange={e => setProposalSubmitter(e.target.value)}
-              />
-            </div>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Wallet address funds should be sent to?</span>
-              </label>
-              <input type="text" 
-                placeholder="0x..." 
-                className="input input-bordered w-full max-w-xs" 
-                onChange={e => setProposalWallet(e.target.value)}
-              />
-            </div>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Title, name, or descriptor to refer to proposal as</span>
-              </label>
-              <input type="text" 
-                placeholder="Park Clean Up" 
-                className="input input-bordered w-full max-w-xs" 
-                onChange={e => setProposalTitle(e.target.value)}
-              />
-            </div>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Who will be the recipent of any approved funds?</span>
-              </label>
-              <input type="text" 
-                placeholder="Green Park clean up group" 
-                className="input input-bordered w-full max-w-xs" 
-                onChange={e => setProposalRecipient(e.target.value)}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Reason for proposal?</span>
-              </label>
-              <textarea className="textarea textarea-bordered h-24"></textarea>
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">How will the money be used?</span>
-              </label>
-              <textarea className="textarea textarea-bordered h-24"></textarea>
-            </div>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Amount seeking</span>
-              </label>
-              <input 
-                type="text" 
-                placeholder="$" 
-                className="input input-bordered w-full max-w-xs" 
-                onChange={e => setProposalAmount(e.target.value)}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <span className="label-text">One-Time Ask</span> 
-                <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <span className="label-text">On-Going Need</span> 
-                <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
-              </label>
-            </div>
-            <div className="card-actions justify-end">
-              <button
-                className="btn btn-accent"
-              >
-                    Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-              </button>
-            </div>
-          </div>
-        </div>
+          {/* Organizer */}
 
-        {/* Voter */}
-        <div className="card w-full bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Vote</h2>
-            <p>Claims a vote NFT, only one token can be claimed</p>
-            <p>Indicate if you are for, against, or abstain from the proposal request. Be sure to submit each vote.</p>
-            <div className="form-control">
-              <h3>Proposal 1</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
-              <div className="w-full max-w-xs">
-                <label className="label">
-                  <span className="label-text">Decision</span>
-                </label>
-                <select className="select select-bordered">
-                  <option disabled selected>Select</option>
-                  <option>For</option>
-                  <option>Against</option>
-                  <option>Abstain</option>
-                </select>
+          {/* Treasury */}
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title">Treasury Account</h2>
+              <Address address={treasuryInfo?.address} />
+              <div>
+                <div>Treasury Balance: </div>
+                <Balance address={treasuryInfo?.address} className="min-h-0 h-auto" />
               </div>
-              <h3>Asking</h3>
-              <p>$XX,XXX</p>
-              <div className="card-actions justify-end">
-                <button
-                  className="btn btn-accent"
-                >
+              <div>*Need Deposit Input*</div>
+            </div>
+          </div>
+
+          {/* Donations */}
+          <div className="card w-full bg-base-100 shadow-xl">
+            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[55%_45%]">
+              <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+                <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
+              </div>
+              <div className="grid gap-5 p-md">
+                <div className="card-header-wrapper place-self-center">
+                  <div className="card-header max-w-lg">
+                    <h2 className="card-title justify-center">Donations</h2>
+                    <p className="text-center max-w-lg justify-center">The fires in West Maui have devastated Lahaina and surrounding communities. Please Help-A-Fren and consider donating to this historical piece of Hawaiian history. Your generosity will go towards helping the local residents begin to rebuild their lives.</p>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-lg">
+                    <p className=" inline-flex">Location</p>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                  </div>
+                  <div className="text-lg">
+                    <p className="inline-flex">Wallet</p>
+                    <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                  </div>
+                </div>
+                <div className="card-actions my-md grid grid-cols-2 gap-6">
+                  {buttons.map((button) => (
+                    <button 
+                      key={button.id} 
+                      id={button.id.toString()}
+                      className={btnActive == button.id ? `btn btn-success outline-none text-accent shadow-xl` : 'btn btn-neutral outline-none text-accent shadow-xl'}
+                      onClick={(e) => setBtnActiveHandler(e)}
+                      value={button.value}
+                      >
+                        {button.text}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Plea For Help */}
+          <div className="card w-full bg-base-100 shadow-xl">
+            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
+              <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+                <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
+                <div className="text-lg">
+                  <p className=" inline-flex">Location</p>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                </div>
+                <div className="text-lg">
+                  <p className="inline-flex">Wallet</p>
+                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                </div>
+              </div>
+              <div className="grid gap-5 p-md">
+                <div className="card-header-wrapper place-self-center">
+                  <div className="card-header max-w-lg">
+                    <h2 className="card-title justify-center">Plea For Help</h2>
+                    <p className="text-center max-w-lg justify-center">Fill out each field to initiate and activate Help-A-Fren.</p>
+                  </div>
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Reason for initiating a Plea For Help?</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    placeholder="a natural disaster, medical misfortune, etc." 
+                    className="input input-bordered w-full max-w-xl" 
+                    onChange={e => setPleaReason(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">How will the money be used?</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    placeholder="towards rebuilding" 
+                    className="input input-bordered w-full max-w-xl" 
+                    onChange={e => setPleaUse(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-fit flex-row">
+                  <label className="label cursor-pointer">
+                    <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                    <span className="label-text ml-sm">One-Time Campaign</span> 
+                  </label>
+                  <label className="label cursor-pointer">
+                    <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                    <span className="label-text ml-sm">On-Going Campaign</span> 
+                  </label>
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Message prompt to display on Proposal form</span>
+                  </label>
+                  <textarea className="textarea textarea-bordered h-24" placeholder="Information or instructions you would like proposers to know..."></textarea>
+                </div>
+                <div className="card-actions justify-end my-md">
+                  <button
+                    className="btn btn-accent outline-none"
+                    >
                       Submit
-                </button>
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="form-control">
-              <h3>Proposal 2</h3>
-              <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
-              <div className="w-full max-w-xs">
-                <label className="label">
-                  <span className="label-text">Decision</span>
-                </label>
-                <select className="select select-bordered">
-                  <option disabled selected>Select</option>
-                  <option>For</option>
-                  <option>Against</option>
-                  <option>Abstain</option>
-                </select>
-              </div>
-              <h3>Asking</h3>
-              <p>$XX,XXX</p>
-              <div className="card-actions justify-end">
-                <button
-                  className="btn btn-accent"
-                >
-                      Submit
-                </button>
-              </div>
-            </div>
-            <div className="form-control">
-              <h3>Proposal 3</h3>
-              <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
-              <div className="w-full max-w-xs">
-                <label className="label">
-                  <span className="label-text">Decision</span>
-                </label>
-                <select className="select select-bordered">
-                  <option disabled selected>Select</option>
-                  <option>For</option>
-                  <option>Against</option>
-                  <option>Abstain</option>
-                </select>
-              </div>
-              <h3>Asking</h3>
-              <p>Unlimited, On-Going</p>
-              <div className="card-actions justify-end">
-                <button
-                  className="btn btn-accent"
-                >
-                      Submit
-                </button>
-              </div>
-            </div>
-            <div className="card-actions justify-end">
-              <button
-                className="btn btn-accent"
-                onClick={handleNFTTokenClaim}
-                disabled={isClaimVoteTokenLoading || isDelegateVoteTokenLoading}
-              >
-                {isClaimVoteTokenLoading || isDelegateVoteTokenLoading ? (
-                  <span className="loading loading-spinner loading-sm"></span>
-                ) : (
-                  <>
-                    Claim <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-                  </>
-                )}
-              </button>
             </div>
           </div>
-        </div>
 
-        {/* Results */}
-        <div className="card w-full bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">Results</h2>
-            <p>The following information indicates the status and result of each proposal that has been submitted thus far.</p>
-            <div className="card-actions justify-end">
-              <p>Donations to date: <span className="ml-5">$XXX,XXX</span></p>
+          {/* Proposer */}
+          <div className="card w-full bg-base-100 shadow-xl">
+            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
+              <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+                <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
+                <div className="text-lg">
+                  <p className=" inline-flex">Location</p>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                </div>
+                <div className="text-lg">
+                  <p className="inline-flex">Wallet</p>
+                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                </div>
+              </div>
+              <div className="grid gap-5 p-md">
+                <div className="card-header-wrapper place-self-center">
+                  <div className="card-header max-w-lg">
+                    <h2 className="card-title justify-center">Proposal Form</h2>
+                    <p className="text-center max-w-lg justify-center">You must be a verifiable resident or business owner in the aforementioned area in order to successfully submit a proposal.</p>
+                  </div>
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Name</span>
+                  </label>
+                  <input type="text" 
+                    placeholder="Jane Doe" 
+                    className="input input-bordered w-full max-w-xs" 
+                    onChange={e => setProposalSubmitter(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Wallet address funds should be sent to?</span>
+                  </label>
+                  <input type="text" 
+                    placeholder="0x..." 
+                    className="input input-bordered w-full max-w-xs" 
+                    onChange={e => setProposalWallet(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Title, name, or descriptor to refer to proposal as</span>
+                  </label>
+                  <input type="text" 
+                    placeholder="Park Clean Up" 
+                    className="input input-bordered w-full max-w-xs" 
+                    onChange={e => setProposalTitle(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Who will be the recipent of any approved funds?</span>
+                  </label>
+                  <input type="text" 
+                    placeholder="Green Park clean up group" 
+                    className="input input-bordered w-full max-w-xs" 
+                    onChange={e => setProposalRecipient(e.target.value)}
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Reason for proposal?</span>
+                  </label>
+                  <textarea className="textarea textarea-bordered h-24"></textarea>
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">How will the money be used?</span>
+                  </label>
+                  <textarea className="textarea textarea-bordered h-24"></textarea>
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Amount seeking</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    placeholder="$" 
+                    className="input input-bordered w-44 max-w-xs" 
+                    onChange={e => setProposalAmount(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-fit flex-row">
+                  <label className="label cursor-pointer">
+                    <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                    <span className="label-text ml-sm">One-Time Ask</span> 
+                  </label>
+                  <label className="label cursor-pointer">
+                    <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                    <span className="label-text ml-sm">On-Going Need</span> 
+                  </label>
+                </div>
+                <div className="card-actions justify-end my-md">
+                  <button
+                    className="btn btn-accent outline-none"
+                  >
+                        Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                  </button>
+                </div>
+              </div>
             </div>
-            <div>
-              <h3>Proposal 1</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
-              <h3>Status</h3>
-              <a href="#">Approved and Sent</a>
+          </div>
+
+          {/* Voter */}
+          <div className="card w-full bg-base-100 shadow-xl">
+            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
+              <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+                <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
+                <div className="text-lg">
+                  <p className=" inline-flex">Location</p>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                </div>
+                <div className="text-lg">
+                  <p className="inline-flex">Wallet</p>
+                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                </div>
+              </div>
+              <div className="grid gap-5 p-md">
+                <div className="card-header-wrapper place-self-center">
+                  <div className="card-header max-w-lg">
+                    <h2 className="card-title justify-center">Vote For A Fren</h2>
+                    <p className="text-center max-w-lg justify-center">You must be a verifiable resident or business owner in the aforementioned area in order to successfully cast votes. Be sure to submit each proposal vote in order for it to count.</p>
+                  </div>
+                </div>
+                <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
+                  <div className="form-control nested-card">
+                    <div className="stat my-0 place-items-end">
+                      <div className="stat-value">$20,000</div>
+                      <div className="stat-desc">Asking</div>
+                    </div>
+                    <p className="small-text">Proposal 1</p>
+                    <h3>Title</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
+                    <div className="w-full flex flex-row justify-between">
+                      <div className="max-w-xs">
+                        <select className="select select-bordered">
+                          <option disabled selected>Select</option>
+                          <option>For</option>
+                          <option>Against</option>
+                          <option>Abstain</option>
+                        </select>
+                      </div>
+                      <div className="card-actions">
+                        <button
+                          className="btn btn-accent"
+                        >
+                              Submit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-control nested-card">
+                    <div className="stat my-0 place-items-end">
+                      <div className="stat-value">$50,000</div>
+                      <div className="stat-desc">Asking</div>
+                    </div>
+                    <p className="small-text">Proposal 2</p>
+                    <h3>Title</h3>
+                    <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
+                    <div className="w-full flex flex-row justify-between">
+                      <div className="max-w-xs">
+                        <select className="select select-bordered">
+                          <option disabled selected>Select</option>
+                          <option>For</option>
+                          <option>Against</option>
+                          <option>Abstain</option>
+                        </select>
+                      </div>
+                      <div className="card-actions">
+                        <button
+                          className="btn btn-accent"
+                        >
+                              Submit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-control nested-card">
+                    <div className="stat my-0 place-items-end">
+                      <div className="stat-value">Unlimited</div>
+                      <div className="stat-desc">Asking</div>
+                    </div>
+                    <p className="small-text">Proposal 3</p>
+                    <h3>Title</h3>
+                    <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
+                    <div className="w-full flex flex-row justify-between">
+                      <div className="max-w-xs">
+                        <select className="select select-bordered">
+                          <option disabled selected>Select</option>
+                          <option>For</option>
+                          <option>Against</option>
+                          <option>Abstain</option>
+                        </select>
+                      </div>
+                      <div className="card-actions">
+                        <button
+                          className="btn btn-accent"
+                        >
+                              Submit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <h3>Proposal 2</h3>
-              <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
-              <h3>Status</h3>
-              <p>Active</p>
-            </div>
-            <div>
-              <h3>Proposal 3</h3>
-              <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
-              <h3>Status</h3>
-              <p>Active</p>
+          </div>
+          
+          {/* Results */}
+          <div className="card w-full bg-base-100 shadow-xl">
+            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
+              <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+                <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
+                <div className="text-lg">
+                  <p className=" inline-flex">Location</p>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                </div>
+                <div className="text-lg">
+                  <p className="inline-flex">Wallet</p>
+                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                </div>
+              </div>
+              <div className="grid gap-5 p-md">
+                <div className="card-header-wrapper place-self-center">
+                  <div className="card-header max-w-lg">
+                    <h2 className="card-title justify-center">Results</h2>
+                    <p className="text-center max-w-lg justify-center">You must be a verifiable resident or business owner in the aforementioned area in order to successfully cast votes. Be sure to submit each proposal vote in order for it to count.</p>
+                  </div>
+                </div>
+                <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
+                  <div className="form-control nested-card bg-light">
+                    <div className="stat my-0 place-items-end">
+                      <div className="stat-value text-accent">$20,000</div>
+                      <div className="stat-desc">Asking</div>
+                    </div>
+                    <p className="small-text">Proposal 1</p>
+                    <h3 className="text-accent">Title</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
+                    <div className="w-full text-center">
+                      <p className="inline-flex text-accent">Approved and Sent</p>
+                      <a href={`https://mumbai.polygonscan.com/address/${TEST_WALLET}`} target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                    </div>
+                  </div>
+                  <div className="form-control nested-card">
+                    <div className="stat my-0 place-items-end">
+                      <div className="stat-value text-accent">$50,000</div>
+                      <div className="stat-desc">Asking</div>
+                    </div>
+                    <p className="small-text">Proposal 2</p>
+                    <h3 className="text-accent">Title</h3>
+                    <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
+                    <div className="w-full flex flex-row text-center">
+                      <p>Active</p>
+                    </div>
+                  </div>
+                  <div className="form-control nested-card">
+                    <div className="stat my-0 place-items-end">
+                      <div className="stat-value text-accent">Unlimited</div>
+                      <div className="stat-desc">Asking</div>
+                    </div>
+                    <p className="small-text">Proposal 3</p>
+                    <h3 className="text-accent">Title</h3>
+                    <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
+                    <div className="w-full flex flex-row text-center">
+                      <p>Active</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
