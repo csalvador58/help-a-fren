@@ -65,7 +65,7 @@ module.exports = {
           "primary-content": "#ffffff",
           secondary: "#FF6644",
           "secondary-content": "#212638",
-          accent: "#93BBFB",
+          accent: "#3F2849",
           "accent-content": "#212638",
           neutral: "#f3f3f3",
           "neutral-content": "#212638",
@@ -121,6 +121,25 @@ module.exports = {
       md: '16px',
       lg: '24px',
       xl: '48px',
-     },
+    },
+    margin: {
+      sm: '8px',
+      md: '16px',
+      lg: '24px',
+      xl: '48px',
+    },
+    colors: {
+      'primary': '#876796',
+      'secondary': '#3F2849',
+      'light': '#DABFE7',
+      'gray': '#C3BEBE'
+    },
+    backgroundColor: theme => ({
+    ...theme('colors'),
+    'primary': '#876796',
+    'secondary': '#3F2849',
+    'light': '#DABFE7',
+    'gray': '#C3BEBE'
+    })
   },
 };

@@ -30,6 +30,7 @@ const ExampleUI: NextPage = () => {
   }
   const [magicLogin, setMagicLogin] = useState<any>(null);
   const [magicAddress, setMagicAddress] = useState<string>("");
+  const [isDisabled, setDisabled] = useState(false);
 
   // Treasury
   const { data: treasuryInfo } = useDeployedContractInfo("HelpAFrenTreasury");
@@ -109,8 +110,8 @@ const ExampleUI: NextPage = () => {
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
       </MetaHeader>
       {/* <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi"> */}
-      <div className="wrapper p-md" data-theme="exampleUi">
-        <div className="container grid gap-6 max-w-screen-lg my-4 mx-auto">
+      <div className="wrapper p-md justify-center" data-theme="exampleUi">
+        <div className="container grid gap-6 max-w-screen-xl">
           {/* <ContractInteraction /> */}
           {/* <ContractData /> */}
 
@@ -162,69 +163,85 @@ const ExampleUI: NextPage = () => {
 
           {/* Plea For Help */}
           <div className="card w-full bg-base-100 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title">Plea For Help</h2>
-              <p>Location <span className="ml-5">USA</span><span className="ml-5">Lahaina</span><span className="ml-5">Maui</span><span className="ml-5">96761</span></p>
-              <p>Wallet <span className="ml-5">0xafksfk2356fjklasjflsdjfasf678asjfo6787656safj0912</span></p>
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Reason for initiating a Plea For Help?</span>
-                </label>
-                <input 
-                  type="text" 
-                  placeholder="a natural disaster, medical misfortune, etc." 
-                  className="input input-bordered w-full max-w-xs" 
-                  onChange={e => setPleaReason(e.target.value)}
-                />
+            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[30%_70%] break-all">
+              <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+                <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
+                <div className="text-lg">
+                  <p className=" inline-flex">Location</p>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                </div>
+                <div className="text-lg">
+                  <p className="inline-flex">Wallet</p>
+                  <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex">0x999999999abcdefghijklmnop</div>
+                  <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                </div>
               </div>
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">How will the money be used?</span>
-                </label>
-                <input 
-                  type="text" 
-                  placeholder="towards rebuilding" 
-                  className="input input-bordered w-full max-w-xs" 
-                  onChange={e => setPleaUse(e.target.value)}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label cursor-pointer">
-                  <span className="label-text">One-Time Campaign</span> 
-                  <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
-                </label>
-              </div>
-              <div className="form-control">
-                <label className="label cursor-pointer">
-                  <span className="label-text">On-Going Campaign</span> 
-                  <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
-                </label>
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Message prompt to display on Proposal form</span>
-                </label>
-                <textarea className="textarea textarea-bordered h-24" placeholder="Information or instructions you would like proposers to know..."></textarea>
-              </div>
-              <div className="card-actions justify-end">
-                <button
-                  className="btn btn-accent"
-                  >
-                    Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-                </button>
-                {/* <button
-                    className="btn btn-primary rounded-full capitalize font-normal font-white w-24 flex items-center gap-1 hover:gap-2 transition-all tracking-widest"
-                    onClick={() => writeAsync()}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <span className="loading loading-spinner loading-sm"></span>
-                    ) : (
-                      <>
-                        Activate <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-                      </>
-                    )}
-                  </button> */}
+              <div className="grid gap-5 p-md">
+                <div className="card-header">
+                  <h2 className="card-title justify-center">Plea For Help</h2>
+                  <p className="text-center justify-center">Fill out each field to initiate and activate Help-A-Fren.</p>
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Reason for initiating a Plea For Help?</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    placeholder="a natural disaster, medical misfortune, etc." 
+                    className="input input-bordered w-full max-w-xl" 
+                    onChange={e => setPleaReason(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">How will the money be used?</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    placeholder="towards rebuilding" 
+                    className="input input-bordered w-full max-w-xl" 
+                    onChange={e => setPleaUse(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-fit">
+                  <label className="label cursor-pointer">
+                    <span className="label-text mr-lg">One-Time Campaign</span> 
+                    <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                  </label>
+                  <label className="label cursor-pointer">
+                    <span className="label-text mr-lg">On-Going Campaign</span> 
+                    <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                  </label>
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Message prompt to display on Proposal form</span>
+                  </label>
+                  <textarea className="textarea textarea-bordered h-24" placeholder="Information or instructions you would like proposers to know..."></textarea>
+                </div>
+                <div className="card-actions justify-end my-md">
+                  <button
+                    className="btn btn-accent outline-none"
+                    >
+                      Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                  </button>
+                  {/* <button
+                      className="btn btn-primary rounded-full capitalize font-normal font-white w-24 flex items-center gap-1 hover:gap-2 transition-all tracking-widest"
+                      onClick={() => writeAsync()}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <span className="loading loading-spinner loading-sm"></span>
+                      ) : (
+                        <>
+                          Activate <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                        </>
+                      )}
+                    </button> */}
+                </div>
               </div>
             </div>
           </div>
