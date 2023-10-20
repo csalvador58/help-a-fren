@@ -252,7 +252,7 @@ const TestPage: NextPage = () => {
           {/* Voter */}
           <div className="card w-full glass shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">Vote</h2>
+              <h2 className="card-title">Vote ***REQUIRED SIGN-IN TO VIEW PAGE, USER CAN CLICK ANY SUBMIT WITHOUT RE-SIGN-IN***</h2>
               <p>Claims a vote NFT, only one token can be claimed</p>
               <p>
                 Indicate if you are for, against, or abstain from the proposal request. Be sure to submit each vote.
