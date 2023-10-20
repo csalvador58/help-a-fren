@@ -208,14 +208,14 @@ const ExampleUI: NextPage = () => {
                     onChange={e => setPleaUse(e.target.value)}
                   />
                 </div>
-                <div className="form-control w-fit">
+                <div className="form-control w-fit flex-row">
                   <label className="label cursor-pointer">
-                    <span className="label-text mr-lg">One-Time Campaign</span> 
                     <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                    <span className="label-text ml-sm">One-Time Campaign</span> 
                   </label>
                   <label className="label cursor-pointer">
-                    <span className="label-text mr-lg">On-Going Campaign</span> 
                     <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                    <span className="label-text ml-sm">On-Going Campaign</span> 
                   </label>
                 </div>
                 <div className="form-control">
@@ -338,17 +338,17 @@ const ExampleUI: NextPage = () => {
                     onChange={e => setProposalAmount(e.target.value)}
                   />
                 </div>
-                <div className="form-control w-fit">
+                <div className="form-control w-fit flex-row">
                   <label className="label cursor-pointer">
-                    <span className="label-text mr-lg">One-Time Ask</span> 
                     <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                    <span className="label-text ml-sm">One-Time Ask</span> 
                   </label>
                   <label className="label cursor-pointer">
-                    <span className="label-text mr-lg">On-Going Need</span> 
                     <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                    <span className="label-text ml-sm">On-Going Need</span> 
                   </label>
                 </div>
-                <div className="card-actions justify-end  my-md">
+                <div className="card-actions justify-end my-md">
                   <button
                     className="btn btn-accent outline-none"
                   >
