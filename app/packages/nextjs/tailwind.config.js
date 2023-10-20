@@ -65,16 +65,16 @@ module.exports = {
           "primary-content": "#ffffff",
           secondary: "#FF6644",
           "secondary-content": "#212638",
-          accent: "#93BBFB",
-          "accent-content": "#212638",
-          neutral: "#f3f3f3",
-          "neutral-content": "#212638",
+          accent: "#3F2849",
+          "accent-content": "#ffffff",
+          neutral: "#ffffff",
+          "neutral-content": "#3F2849",
           "base-100": "#ffffff",
           "base-200": "#f1f1f1",
           "base-300": "#d0d0d0",
           "base-content": "#212638",
           info: "#93BBFB",
-          success: "#34EEB6",
+          success: "#DABFE7",
           warning: "#FFCF72",
           error: "#FF8863",
 
@@ -116,5 +116,30 @@ module.exports = {
         zoom: "zoom 1s ease infinite",
       },
     },
+    padding: {
+      sm: '8px',
+      md: '16px',
+      lg: '24px',
+      xl: '48px',
+    },
+    margin: {
+      sm: '8px',
+      md: '16px',
+      lg: '24px',
+      xl: '48px',
+    },
+    colors: {
+      'primary': '#876796',
+      'secondary': '#3F2849',
+      'light': '#DABFE7',
+      'gray': '#C3BEBE'
+    },
+    backgroundColor: theme => ({
+    ...theme('colors'),
+    'primary': '#876796',
+    'secondary': '#3F2849',
+    'light': '#DABFE7',
+    'gray': '#C3BEBE'
+    })
   },
 };
