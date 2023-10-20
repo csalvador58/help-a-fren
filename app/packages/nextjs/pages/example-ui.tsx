@@ -163,7 +163,7 @@ const ExampleUI: NextPage = () => {
 
           {/* Plea For Help */}
           <div className="card w-full bg-base-100 shadow-xl">
-            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[30%_70%] break-all">
+            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
               <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
                 <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
                 <div className="text-lg">
@@ -175,14 +175,16 @@ const ExampleUI: NextPage = () => {
                 </div>
                 <div className="text-lg">
                   <p className="inline-flex">Wallet</p>
-                  <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex">0x999999999abcdefghijklmnop</div>
+                  <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex break-all">0x999999999abcdefghijklmnop</div>
                   <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
                 </div>
               </div>
               <div className="grid gap-5 p-md">
-                <div className="card-header">
-                  <h2 className="card-title justify-center">Plea For Help</h2>
-                  <p className="text-center justify-center">Fill out each field to initiate and activate Help-A-Fren.</p>
+                <div className="card-header-wrapper place-self-center">
+                  <div className="card-header max-w-lg">
+                    <h2 className="card-title justify-center">Plea For Help</h2>
+                    <p className="text-center max-w-lg justify-center">Fill out each field to initiate and activate Help-A-Fren.</p>
+                  </div>
                 </div>
                 <div className="form-control w-full">
                   <label className="label">
@@ -248,90 +250,111 @@ const ExampleUI: NextPage = () => {
 
           {/* Proposer */}
           <div className="card w-full bg-base-100 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title">Proposal Form</h2>
-              <p>Message from organizer Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor.</p>
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Name</span>
-                </label>
-                <input type="text" 
-                  placeholder="Jane Doe" 
-                  className="input input-bordered w-full max-w-xs" 
-                  onChange={e => setProposalSubmitter(e.target.value)}
-                />
+            <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
+              
+              <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+                <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
+                <div className="text-lg">
+                  <p className=" inline-flex">Location</p>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                </div>
+                <div className="text-lg">
+                  <p className="inline-flex">Wallet</p>
+                  <div className="badge badge-md badge-accent badge-outline ml-sm inline-flex break-all">0x999999999abcdefghijklmnop</div>
+                  <a href="https://www.google.com" target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
+                </div>
               </div>
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Wallet address funds should be sent to?</span>
-                </label>
-                <input type="text" 
-                  placeholder="0x..." 
-                  className="input input-bordered w-full max-w-xs" 
-                  onChange={e => setProposalWallet(e.target.value)}
-                />
-              </div>
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Title, name, or descriptor to refer to proposal as</span>
-                </label>
-                <input type="text" 
-                  placeholder="Park Clean Up" 
-                  className="input input-bordered w-full max-w-xs" 
-                  onChange={e => setProposalTitle(e.target.value)}
-                />
-              </div>
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Who will be the recipent of any approved funds?</span>
-                </label>
-                <input type="text" 
-                  placeholder="Green Park clean up group" 
-                  className="input input-bordered w-full max-w-xs" 
-                  onChange={e => setProposalRecipient(e.target.value)}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Reason for proposal?</span>
-                </label>
-                <textarea className="textarea textarea-bordered h-24"></textarea>
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">How will the money be used?</span>
-                </label>
-                <textarea className="textarea textarea-bordered h-24"></textarea>
-              </div>
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Amount seeking</span>
-                </label>
-                <input 
-                  type="text" 
-                  placeholder="$" 
-                  className="input input-bordered w-full max-w-xs" 
-                  onChange={e => setProposalAmount(e.target.value)}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label cursor-pointer">
-                  <span className="label-text">One-Time Ask</span> 
-                  <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
-                </label>
-              </div>
-              <div className="form-control">
-                <label className="label cursor-pointer">
-                  <span className="label-text">On-Going Need</span> 
-                  <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
-                </label>
-              </div>
-              <div className="card-actions justify-end">
-                <button
-                  className="btn btn-accent"
-                >
-                      Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-                </button>
+
+              <div className="grid gap-5 p-md">
+                <div className="card-header-wrapper place-self-center">
+                  <div className="card-header max-w-lg">
+                    <h2 className="card-title justify-center">Proposal Form</h2>
+                    <p className="text-center max-w-lg justify-center">You must be a verifiable resident or business owner in the aforementioned area in order to successfully submit a proposal.</p>
+                  </div>
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Name</span>
+                  </label>
+                  <input type="text" 
+                    placeholder="Jane Doe" 
+                    className="input input-bordered w-full max-w-xs" 
+                    onChange={e => setProposalSubmitter(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Wallet address funds should be sent to?</span>
+                  </label>
+                  <input type="text" 
+                    placeholder="0x..." 
+                    className="input input-bordered w-full max-w-xs" 
+                    onChange={e => setProposalWallet(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Title, name, or descriptor to refer to proposal as</span>
+                  </label>
+                  <input type="text" 
+                    placeholder="Park Clean Up" 
+                    className="input input-bordered w-full max-w-xs" 
+                    onChange={e => setProposalTitle(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Who will be the recipent of any approved funds?</span>
+                  </label>
+                  <input type="text" 
+                    placeholder="Green Park clean up group" 
+                    className="input input-bordered w-full max-w-xs" 
+                    onChange={e => setProposalRecipient(e.target.value)}
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Reason for proposal?</span>
+                  </label>
+                  <textarea className="textarea textarea-bordered h-24"></textarea>
+                </div>
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">How will the money be used?</span>
+                  </label>
+                  <textarea className="textarea textarea-bordered h-24"></textarea>
+                </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Amount seeking</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    placeholder="$" 
+                    className="input input-bordered w-44 max-w-xs" 
+                    onChange={e => setProposalAmount(e.target.value)}
+                  />
+                </div>
+                <div className="form-control w-fit">
+                  <label className="label cursor-pointer">
+                    <span className="label-text mr-lg">One-Time Ask</span> 
+                    <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                  </label>
+                  <label className="label cursor-pointer">
+                    <span className="label-text mr-lg">On-Going Need</span> 
+                    <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                  </label>
+                </div>
+                <div className="card-actions justify-end  my-md">
+                  <button
+                    className="btn btn-accent outline-none"
+                  >
+                        Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
