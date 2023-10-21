@@ -26,9 +26,6 @@
 // };
 
 export const TEST_WALLET = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
-<<<<<<< HEAD
 export const NFT_IMAGE_CID = "QmZjQLfrSiSUThoXx1AKGJD6k8ULTEtzyqY9Put3Hme1vk";
 export const PINATA_PINJSONTOIPFS_URL = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
-=======
 export const TREASURY_WALLET = "0x522989F0585c4Bc2eb02d27EF8Eb62Ea0ae0C4b1";
->>>>>>> main

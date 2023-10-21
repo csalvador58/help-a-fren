@@ -251,7 +251,7 @@ const TestPage: NextPage = () => {
         </div>
         <div id="item3" className="carousel-item w-full">
           {/* Voter */}
-          <Vote />
+          {/* <Vote /> */}
         </div>
         <div id="item4" className="carousel-item w-full">
           {/* Results */}
