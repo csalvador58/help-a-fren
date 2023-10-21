@@ -19,6 +19,8 @@ import { MagicLogin } from "~~/components/help-a-fren/utils/MagicLogin";
 import { TEST_WALLET } from "~~/utils/constants";
 import { TREASURY_WALLET } from "~~/utils/constants";
 import { log } from "console";
+import Proposal from "./helpafren/haf-proposal";
+import Plea from "./helpafren/haf-plea";
 
 const ExampleUI: NextPage = () => {
   // const { data: totalCounter } = useScaffoldContractRead({
@@ -34,6 +36,9 @@ const ExampleUI: NextPage = () => {
   const [magicAddress, setMagicAddress] = useState<string>("");
   const [isDisabled, setDisabled] = useState(false);
   const [btnActive, setBtnActive] = useState(null);
+  const [voteSelect, setVoteSelect] = useState([
+
+  ]);
 
   // Treasury
   const { data: treasuryInfo } = useDeployedContractInfo("HelpAFrenTreasury");
@@ -41,15 +46,15 @@ const ExampleUI: NextPage = () => {
   // Plea For Help
   const [pleaReason, setPleaReason] = useState("");
   const [pleaUse, setPleaUse] = useState("");
-  // const [pleaMessage, setPleaMessage] = useState("");
+  const [pleaMessage, setPleaMessage] = useState("");
 
   // Proposal
   const [proposalSubmitter, setProposalSubmitter] = useState("");
   const [proposalWallet, setProposalWallet] = useState("");
   const [proposalTitle, setProposalTitle] = useState("");
   const [proposalRecipient, setProposalRecipient] = useState("");
-  // const [proposalReason, setProposalReason] = useState("");
-  // const [proposalUse, setProposalUse] = useState("");
+  const [proposalReason, setProposalReason] = useState("");
+  const [proposalUse, setProposalUse] = useState("");
   const [proposalAmount, setProposalAmount] = useState("");
 
   // Voting Token
@@ -103,10 +108,7 @@ const ExampleUI: NextPage = () => {
   };
 
   const setBtnActiveHandler = (button:any) => {
-    console.log("Target", button.target.id)
     setBtnActive(button.target.id);
-    console.log("Value", button.target.value)
-    console.log(button)
   }
   console.log("Working", btnActive)
   const buttons = [
@@ -116,6 +118,11 @@ const ExampleUI: NextPage = () => {
     {id:4, text:`$500`, value:500},
     {id:5, text:`Other`, value:0}
   ]
+
+  const voteHandler = (e:any) => {
+    console.log("vote opt", e.target.id)
+    // setVoteOptions()
+  }
 
   return (
     <>
@@ -223,7 +230,7 @@ const ExampleUI: NextPage = () => {
           </div>
 
           {/* Plea For Help */}
-          <div className="card w-full bg-base-100 shadow-xl">
+          {/* <div className="card w-full bg-base-100 shadow-xl">
             <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
               <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
                 <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
@@ -254,8 +261,9 @@ const ExampleUI: NextPage = () => {
                     type="text" 
                     placeholder="a natural disaster, medical misfortune, etc." 
                     className="input input-bordered w-full max-w-xl" 
+                    value={pleaReason}
                     onChange={e => setPleaReason(e.target.value)}
-                  />
+                    />
                 </div>
                 <div className="form-control w-full">
                   <label className="label">
@@ -265,8 +273,9 @@ const ExampleUI: NextPage = () => {
                     type="text" 
                     placeholder="towards rebuilding" 
                     className="input input-bordered w-full max-w-xl" 
+                    value={pleaUse}
                     onChange={e => setPleaUse(e.target.value)}
-                  />
+                    />
                 </div>
                 <div className="form-control w-fit flex-row">
                   <label className="label cursor-pointer">
@@ -282,7 +291,13 @@ const ExampleUI: NextPage = () => {
                   <label className="label">
                     <span className="label-text">Message prompt to display on Proposal form</span>
                   </label>
-                  <textarea className="textarea textarea-bordered h-24" placeholder="Information or instructions you would like proposers to know..."></textarea>
+                  <textarea 
+                    className="textarea textarea-bordered h-24" 
+                    placeholder="Information or instructions you would like proposers to know..."
+                    value={pleaMessage}
+                    onChange={e => setPleaMessage(e.target.value)}
+                    >
+                  </textarea>
                 </div>
                 <div className="card-actions justify-end my-md">
                   <button
@@ -293,10 +308,18 @@ const ExampleUI: NextPage = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
+          <Plea 
+            pleaReason={pleaReason}
+            pleaUse={pleaUse}
+            pleaMessage={pleaMessage}
+            setPleaReason={setPleaReason}
+            setPleaUse={setPleaUse}
+            setPleaMessage={setPleaMessage}
+          />
 
           {/* Proposer */}
-          <div className="card w-full bg-base-100 shadow-xl">
+          {/* <div className="card w-full bg-base-100 shadow-xl">
             <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
               <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
                 <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
@@ -396,28 +419,47 @@ const ExampleUI: NextPage = () => {
                   <button
                     className="btn btn-accent outline-none"
                   >
-                        Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                        Submit
                   </button>
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
+          <Proposal 
+            submitter={proposalSubmitter}
+            wallet={proposalWallet}
+            title={proposalTitle}
+            recipient={proposalRecipient}
+            reason={proposalReason}
+            use={proposalUse}
+            amount={proposalAmount}
+            setSubmitter={setProposalSubmitter}
+            setWallet={setProposalWallet}
+            setTitle={setProposalTitle}
+            setRecipient={setProposalRecipient}
+            setReason={setProposalReason}
+            setUse={setProposalUse}
+            setAmount={setProposalAmount}
+            pleaMessage={pleaMessage}
+          />
 
           {/* Voter */}
           <div className="card w-full bg-base-100 shadow-xl">
             <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
               <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
                 <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
-                <div className="text-lg">
-                  <p className=" inline-flex">Location</p>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
-                </div>
-                <div className="text-lg">
-                  <p className="inline-flex">Wallet</p>
-                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                <div className="donation-details">
+                  <div className="text-lg">
+                    <p className=" inline-flex">Location</p>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                  </div>
+                  <div className="text-lg">
+                    <p className="inline-flex">Wallet</p>
+                    <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                  </div>
                 </div>
               </div>
               <div className="grid gap-5 p-md">
@@ -428,14 +470,47 @@ const ExampleUI: NextPage = () => {
                   </div>
                 </div>
                 <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value">$20,000</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">$20,000</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 1</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
                     </div>
-                    <p className="small-text">Proposal 1</p>
-                    <h3>Title</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
+                    <div className="w-full flex flex-row justify-between">
+                      <div className="max-w-xs">
+                        <select 
+                          className="select select-bordered"
+                          onChange={(e) => voteHandler(e)}
+                        >
+                          <option id="no-vote" disabled selected>Select</option>
+                          <option id="for-vote">For</option>
+                          <option id="ag-vote">Against</option>
+                          <option id="ab-vote">Abstain</option>
+                        </select>
+                      </div>
+                      <div className="card-actions">
+                        <button
+                          className="btn btn-accent"
+                        >
+                              Submit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">$50,000</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 2</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
+                    </div>
                     <div className="w-full flex flex-row justify-between">
                       <div className="max-w-xs">
                         <select className="select select-bordered">
@@ -454,40 +529,16 @@ const ExampleUI: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value">$50,000</div>
-                      <div className="stat-desc">Asking</div>
-                    </div>
-                    <p className="small-text">Proposal 2</p>
-                    <h3>Title</h3>
-                    <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
-                    <div className="w-full flex flex-row justify-between">
-                      <div className="max-w-xs">
-                        <select className="select select-bordered">
-                          <option disabled selected>Select</option>
-                          <option>For</option>
-                          <option>Against</option>
-                          <option>Abstain</option>
-                        </select>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">Unlimited</div>
+                        <div className="stat-desc">Asking</div>
                       </div>
-                      <div className="card-actions">
-                        <button
-                          className="btn btn-accent"
-                        >
-                              Submit
-                        </button>
-                      </div>
+                      <p className="small-text">Proposal 3</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
                     </div>
-                  </div>
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value">Unlimited</div>
-                      <div className="stat-desc">Asking</div>
-                    </div>
-                    <p className="small-text">Proposal 3</p>
-                    <h3>Title</h3>
-                    <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
                     <div className="w-full flex flex-row justify-between">
                       <div className="max-w-xs">
                         <select className="select select-bordered">
@@ -516,16 +567,18 @@ const ExampleUI: NextPage = () => {
             <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
               <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
                 <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
-                <div className="text-lg">
-                  <p className=" inline-flex">Location</p>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
-                </div>
-                <div className="text-lg">
-                  <p className="inline-flex">Wallet</p>
-                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                <div className="donation-details">
+                  <div className="text-lg">
+                    <p className=" inline-flex">Location</p>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                  </div>
+                  <div className="text-lg">
+                    <p className="inline-flex">Wallet</p>
+                    <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                  </div>
                 </div>
               </div>
               <div className="grid gap-5 p-md">
@@ -536,39 +589,45 @@ const ExampleUI: NextPage = () => {
                   </div>
                 </div>
                 <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
-                  <div className="form-control nested-card bg-light">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value text-accent">$20,000</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between bg-light">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">$20,000</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 1</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
                     </div>
-                    <p className="small-text">Proposal 1</p>
-                    <h3 className="text-accent">Title</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
                     <div className="w-full text-center">
                       <p className="inline-flex text-accent">Approved and Sent</p>
                       <a href={`https://mumbai.polygonscan.com/address/${TEST_WALLET}`} target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
                     </div>
                   </div>
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value text-accent">$50,000</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">$50,000</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 2</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
                     </div>
-                    <p className="small-text">Proposal 2</p>
-                    <h3 className="text-accent">Title</h3>
-                    <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
                     <div className="w-full flex flex-row text-center">
                       <p>Active</p>
                     </div>
                   </div>
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value text-accent">Unlimited</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">Unlimited</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 3</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
                     </div>
-                    <p className="small-text">Proposal 3</p>
-                    <h3 className="text-accent">Title</h3>
-                    <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
                     <div className="w-full flex flex-row text-center">
                       <p>Active</p>
                     </div>
