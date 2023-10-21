@@ -1,13 +1,14 @@
 import { Key, use, useEffect, useState } from "react";
 import Image from "next/image";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
+import { HafIDFormat } from "~~/components/help-a-fren/haf-id-format";
 import { getAllProposals } from "~~/components/help-a-fren/utils/getAllProposals";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { TREASURY_WALLET } from "~~/utils/constants";
 
 type ProposalDetails = {
-  id: string;
+  proposalId: string;
   description: Description;
   external_url: string;
   image: string;
@@ -87,13 +88,18 @@ const VoteForAFrenTest = () => {
             <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
               {proposals &&
                 proposals.map((item: ProposalDetails) => (
-                  <div key={item.id} className="form-control nested-card place-content-between">
+                  <div key={item.proposalId} className="form-control nested-card place-content-between">
                     <div>
                       <div className="stat my-0 place-items-end">
                         <div className="stat-value text-accent">{`$${+item.description.amount * 100000}`}</div>
                         <div className="stat-desc">Asking</div>
                       </div>
-                      <p className="small-text">Proposal {item.id}</p>
+                      <div className="text-lg">
+                        <p className="small-text inline-flex">Proposal ID: </p>
+                        <span className="inline-flex gap-4 m-sm">
+                          <HafIDFormat address={item.proposalId} />
+                        </span>
+                      </div>
                       <h3 className="text-accent">{item.description.title || "Not Available"}</h3>
                       <p>Reason: {item.description.reason}</p>
                       <p>Plan: {item.description.use}</p>
