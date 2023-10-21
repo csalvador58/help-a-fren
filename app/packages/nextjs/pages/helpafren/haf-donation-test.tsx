@@ -65,7 +65,7 @@ const DonationTest = ({ btnActive, setBtnActive }: IDonationProps) => {
                   key={button.id}
                   id={button.id.toString()}
                   className={
-                    btnActive == button.id
+                    btnActive === button.id.toString()
                       ? `btn btn-success outline-none text-accent shadow-xl`
                       : "btn btn-neutral outline-none text-accent shadow-xl"
                   }
