@@ -39,10 +39,40 @@ export const Header = () => {
       <li>
         <NavLink href="/">Home</NavLink>
       </li>
-      <li>
+      {/* <li>
         <NavLink href="/debug">
           <BugAntIcon className="h-4 w-4" />
           Debug Contracts
+        </NavLink>
+      </li> */}
+      <li>
+        <NavLink href="/helpafren/haf-donation-test">
+          <SparklesIcon className="h-4 w-4" />
+          Make A Donation
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/helpafren/haf-plea-test">
+          <SparklesIcon className="h-4 w-4" />
+          Plea For Help
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/helpafren/haf-proposal-test">
+          <SparklesIcon className="h-4 w-4" />
+          Proposal Form
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/helpafren/haf-vote-test">
+          <SparklesIcon className="h-4 w-4" />
+          Vote For A Fren
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/helpafren/haf-results-test">
+          <SparklesIcon className="h-4 w-4" />
+          Results
         </NavLink>
       </li>
       <li>
@@ -52,17 +82,23 @@ export const Header = () => {
         </NavLink>
       </li>
       <li>
+        <NavLink href="/ui-test">
+          <SparklesIcon className="h-4 w-4" />
+          UI-TEST
+        </NavLink>
+      </li>
+      <li>
         <NavLink href="/test-page">
           <SparklesIcon className="h-4 w-4" />
           Test Page
         </NavLink>
       </li>
-      <li>
+      {/* <li>
         <NavLink href="/blockexplorer">
           <MagnifyingGlassIcon className="h-4 w-4" />
           Block Explorer
         </NavLink>
-      </li>
+      </li> */}
     </>
   );
 

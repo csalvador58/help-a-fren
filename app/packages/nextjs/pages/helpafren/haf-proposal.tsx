@@ -42,7 +42,6 @@ const Proposal = ({
 }: IProposalProps ) => {
 
     return (
-
         <div className="card w-full bg-base-100 shadow-xl">
             <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
                 <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
