@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Image from "next/image";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
 import { Address } from "~~/components/scaffold-eth";
@@ -16,6 +17,11 @@ interface IPleaProps extends IPleaDetails {
 }
 
 const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse, setPleaMessage }: IPleaProps) => {
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleRadioChange = () => {
+    setIsChecked(!isChecked);
+  };
   return (
     <HafCardWrap>
       <div className="card w-full bg-base-100 shadow-xl">
@@ -76,11 +82,23 @@ const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse,
             </div>
             <div className="form-control w-fit flex-row">
               <label className="label cursor-pointer">
-                <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                <input
+                  type="radio"
+                  name="radio-10"
+                  className="radio checked:bg-blue-500"
+                  checked={!isChecked}
+                  onChange={handleRadioChange}
+                />
                 <span className="label-text ml-sm">One-Time Campaign</span>
               </label>
               <label className="label cursor-pointer">
-                <input type="radio" name="radio-10" className="radio checked:bg-blue-500" checked />
+                <input
+                  type="radio"
+                  name="radio-10"
+                  className="radio checked:bg-blue-500"
+                  checked={isChecked}
+                  onChange={handleRadioChange}
+                />
                 <span className="label-text ml-sm">On-Going Campaign</span>
               </label>
             </div>
