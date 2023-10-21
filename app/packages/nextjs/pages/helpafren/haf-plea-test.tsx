@@ -17,10 +17,16 @@ interface IPleaProps extends IPleaDetails {
 }
 
 const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse, setPleaMessage }: IPleaProps) => {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isRadio1Checked, setIsRadio1Checked] = useState(true);
+  const [isRadio2Checked, setIsRadio2Checked] = useState(false);
 
   const handleRadioChange = () => {
-    setIsChecked(!isChecked);
+    setIsRadio1Checked(!isRadio1Checked);
+    setIsRadio2Checked(!isRadio2Checked);
+  };
+
+  const submitHandler = () => {
+    console.log("submitHandler");
   };
 
   return (
@@ -85,9 +91,10 @@ const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse,
               <label className="label cursor-pointer">
                 <input
                   type="radio"
+                  value="one-time"
                   name="radio-10"
                   className="radio checked:bg-blue-500"
-                  checked={!isChecked}
+                  checked={isRadio1Checked}
                   onChange={handleRadioChange}
                 />
                 <span className="label-text ml-sm">One-Time Campaign</span>
@@ -95,9 +102,10 @@ const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse,
               <label className="label cursor-pointer">
                 <input
                   type="radio"
+                  value="on-going"
                   name="radio-10"
                   className="radio checked:bg-blue-500"
-                  checked={isChecked}
+                  checked={!isRadio2Checked}
                   onChange={handleRadioChange}
                 />
                 <span className="label-text ml-sm">On-Going Campaign</span>
@@ -111,11 +119,13 @@ const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse,
                 className="textarea textarea-bordered h-24"
                 placeholder="Information or instructions you would like proposers to know..."
                 value={pleaMessage}
-                onChange={e => setPleaMessageHandler(e.target.value)}
+                onChange={e => setPleaMessage(e.target.value)}
               ></textarea>
             </div>
             <div className="card-actions justify-end my-md">
-              <button onClick={submitHandler} className="btn btn-accent outline-none">Submit</button>
+              <button onClick={submitHandler} className="btn btn-accent outline-none">
+                Submit
+              </button>
             </div>
           </div>
         </div>

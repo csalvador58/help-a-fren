@@ -15,7 +15,6 @@ const DonationTest = ({ btnActive, setBtnActive }: IDonationProps) => {
   const setBtnActiveHandler = (button: any) => {
     setBtnActive(button.target.id);
   };
-  console.log("Working", btnActive);
   const buttons = [
     { id: 1, text: `$25`, value: 25 },
     { id: 2, text: `$50`, value: 50 },
