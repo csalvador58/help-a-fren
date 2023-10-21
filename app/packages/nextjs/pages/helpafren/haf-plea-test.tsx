@@ -22,6 +22,7 @@ const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse,
   const handleRadioChange = () => {
     setIsChecked(!isChecked);
   };
+
   return (
     <HafCardWrap>
       <div className="card w-full bg-base-100 shadow-xl">
@@ -110,11 +111,11 @@ const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse,
                 className="textarea textarea-bordered h-24"
                 placeholder="Information or instructions you would like proposers to know..."
                 value={pleaMessage}
-                onChange={e => setPleaMessage(e.target.value)}
+                onChange={e => setPleaMessageHandler(e.target.value)}
               ></textarea>
             </div>
             <div className="card-actions justify-end my-md">
-              <button className="btn btn-accent outline-none">Submit</button>
+              <button onClick={submitHandler} className="btn btn-accent outline-none">Submit</button>
             </div>
           </div>
         </div>

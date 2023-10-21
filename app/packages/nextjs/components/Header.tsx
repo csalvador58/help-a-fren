@@ -45,7 +45,7 @@ export const Header = () => {
           Debug Contracts
         </NavLink>
       </li> */}
-      <li>
+      {/* <li>
         <NavLink href="/helpafren/haf-donation-test">
           <SparklesIcon className="h-4 w-4" />
           Make A Donation
@@ -74,7 +74,7 @@ export const Header = () => {
           <SparklesIcon className="h-4 w-4" />
           Results
         </NavLink>
-      </li>
+      </li> */}
       <li>
         <NavLink href="/example-ui">
           <SparklesIcon className="h-4 w-4" />

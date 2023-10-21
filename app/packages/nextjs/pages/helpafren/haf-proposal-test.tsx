@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import Image from "next/image";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
 import { Address } from "~~/components/scaffold-eth";
@@ -46,6 +46,10 @@ const ProposalTest = ({
 
   const handleRadioChange = () => {
     setIsChecked(!isChecked);
+  };
+
+  const setSubmitterHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    () => setSubmitter(e.target.value);
   };
 
   return (
@@ -96,7 +100,7 @@ const ProposalTest = ({
                 placeholder="Jane Doe"
                 className="input input-bordered w-full max-w-xs"
                 value={submitter}
-                onChange={e => setSubmitter(e.target.value)}
+                onChange={e => setSubmitterHandler(e)}
               />
             </div>
             <div className="form-control w-full">

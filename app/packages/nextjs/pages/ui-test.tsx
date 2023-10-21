@@ -1,8 +1,8 @@
 // import { useEffect, useState } from "react";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import DonationTest from "./helpafren/haf-donation-test";
 import Plea from "./helpafren/haf-plea";
-import Proposal from "./helpafren/haf-proposal";
+import ProposalTest from "./helpafren/haf-proposal-test";
 import ResultsTest from "./helpafren/haf-results-test";
 import VoteForAFrenTest from "./helpafren/haf-vote-test";
 import { InstanceWithExtensions, SDKBase } from "@magic-sdk/provider";
@@ -196,7 +196,7 @@ const UITest: NextPage = () => {
           />
 
           {/* Proposer */}
-          <Proposal
+          <ProposalTest
             submitter={proposalSubmitter}
             wallet={proposalWallet}
             title={proposalTitle}
