@@ -1,13 +1,54 @@
+import { Key, use, useEffect, useState } from "react";
 import Image from "next/image";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
+import { getAllProposals } from "~~/components/help-a-fren/utils/getAllProposals";
 import { Address } from "~~/components/scaffold-eth";
+import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { TREASURY_WALLET } from "~~/utils/constants";
 
+type ProposalDetails = {
+  id: string;
+  description: Description;
+  external_url: string;
+  image: string;
+};
+
+type Description = {
+  submitter: string;
+  wallet: string;
+  title: string;
+  recipient: string;
+  reason: string;
+  use: string;
+  amount: string;
+};
+
 const VoteForAFrenTest = () => {
-  const voteHandler = (e: any) => {
-    console.log("vote opt", e.target.id);
-    // setVoteOptions()
-  };
+  const [proposals, setProposals] = useState<ProposalDetails[]>([]);
+  // const voteHandler = (e: any) => {
+  //   console.log("vote opt", e.target.id);
+  //   // setVoteOptions()
+  // };
+
+  useEffect(() => {
+    const getProposals = async () => {
+      const proposalsFromRegistry = await getAllProposals();
+      console.log("proposals", proposalsFromRegistry);
+
+      const proposals = await proposalsFromRegistry.map(async (proposal: any) => {
+        // fetch proposal data from ipfs
+        const data = await fetch(proposal[1]);
+        const proposalMetadata = await data.json();
+        console.log("proposalMetaData", proposalMetadata);
+
+        return proposalMetadata;
+      });
+      const resolvedProposals = await Promise.all(proposals);
+      setProposals(resolvedProposals);
+    };
+    getProposals();
+  }, []);
+
   return (
     <HafCardWrap>
       <div className="card w-full bg-base-100 shadow-xl">
@@ -44,38 +85,37 @@ const VoteForAFrenTest = () => {
               </div>
             </div>
             <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
-              <div className="form-control nested-card place-content-between">
-                <div>
-                  <div className="stat my-0 place-items-end">
-                    <div className="stat-value text-accent">$20,000</div>
-                    <div className="stat-desc">Asking</div>
+              {proposals &&
+                proposals.map((item: ProposalDetails) => (
+                  <div key={item.id} className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">{`$${+item.description.amount * 100000}`}</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal {item.id}</p>
+                      <h3 className="text-accent">{item.description.title || "Not Available"}</h3>
+                      <p>Reason: {item.description.reason}</p>
+                      <p>Plan: {item.description.use}</p>
+                    </div>
+                    <div className="w-full flex flex-row justify-between">
+                      <div className="max-w-xs">
+                        <select className="select select-bordered" onChange={e => voteHandler(e)}>
+                          <option id="no-vote" disabled selected>
+                            Select
+                          </option>
+                          <option id="for-vote">For</option>
+                          <option id="ag-vote">Against</option>
+                          <option id="ab-vote">Abstain</option>
+                        </select>
+                      </div>
+                      <div className="card-actions">
+                        <button className="btn btn-accent">Submit</button>
+                      </div>
+                    </div>
                   </div>
-                  <p className="small-text">Proposal 1</p>
-                  <h3 className="text-accent">Title</h3>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc
-                    imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque
-                    tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at
-                    molestie velit, eu finibus sem.
-                  </p>
-                </div>
-                <div className="w-full flex flex-row justify-between">
-                  <div className="max-w-xs">
-                    <select className="select select-bordered" onChange={e => voteHandler(e)}>
-                      <option id="no-vote" disabled selected>
-                        Select
-                      </option>
-                      <option id="for-vote">For</option>
-                      <option id="ag-vote">Against</option>
-                      <option id="ab-vote">Abstain</option>
-                    </select>
-                  </div>
-                  <div className="card-actions">
-                    <button className="btn btn-accent">Submit</button>
-                  </div>
-                </div>
-              </div>
-              <div className="form-control nested-card place-content-between">
+                ))}
+              {/* <div className="form-control nested-card place-content-between">
                 <div>
                   <div className="stat my-0 place-items-end">
                     <div className="stat-value text-accent">$50,000</div>
@@ -132,7 +172,7 @@ const VoteForAFrenTest = () => {
                     <button className="btn btn-accent">Submit</button>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

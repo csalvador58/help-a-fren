@@ -35,7 +35,7 @@ interface IProposalDetails {
   reason: string;
   use: string;
   amount: string;
-  pleaMessage: string;
+  pleaMessage?: string;
 }
 
 interface IProposalProps extends IProposalDetails {
