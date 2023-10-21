@@ -175,7 +175,7 @@ const ProposalTest = ({
                   name="radio-10"
                   className="radio checked:bg-blue-500"
                   checked={!isChecked}
-                  onClick={handleRadioChange}
+                  onChange={handleRadioChange}
                 />
                 <span className="label-text ml-sm">One-Time Ask</span>
               </label>
@@ -186,7 +186,7 @@ const ProposalTest = ({
                   name="radio-10"
                   className="radio checked:bg-blue-500"
                   checked={isChecked}
-                  onClick={handleRadioChange}
+                  onChange={handleRadioChange}
                 />
                 <span className="label-text ml-sm">On-Going Need</span>
               </label>
