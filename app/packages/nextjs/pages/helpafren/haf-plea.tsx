@@ -27,18 +27,20 @@ const Plea = ({
 
         <div className="card w-full bg-base-100 shadow-xl">
         <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
-          <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+          <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full justify-center">
             <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
-            <div className="text-lg">
-              <p className=" inline-flex">Location</p>
-              <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
-              <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
-              <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
-              <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
-            </div>
-            <div className="text-lg">
-              <p className="inline-flex">Wallet</p>
-              <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+            <div className="donation-details">
+                <div className="text-lg">
+                <p className=" inline-flex">Location</p>
+                <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                </div>
+                <div className="text-lg">
+                <p className="inline-flex">Wallet</p>
+                <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                </div>
             </div>
           </div>
           <div className="grid gap-5 p-md">

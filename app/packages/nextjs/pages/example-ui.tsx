@@ -448,16 +448,18 @@ const ExampleUI: NextPage = () => {
             <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
               <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
                 <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
-                <div className="text-lg">
-                  <p className=" inline-flex">Location</p>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
-                </div>
-                <div className="text-lg">
-                  <p className="inline-flex">Wallet</p>
-                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                <div className="donation-details">
+                  <div className="text-lg">
+                    <p className=" inline-flex">Location</p>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                  </div>
+                  <div className="text-lg">
+                    <p className="inline-flex">Wallet</p>
+                    <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                  </div>
                 </div>
               </div>
               <div className="grid gap-5 p-md">
@@ -468,14 +470,16 @@ const ExampleUI: NextPage = () => {
                   </div>
                 </div>
                 <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value text-accent">$20,000</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">$20,000</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 1</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
                     </div>
-                    <p className="small-text">Proposal 1</p>
-                    <h3 className="text-accent">Title</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
                     <div className="w-full flex flex-row justify-between">
                       <div className="max-w-xs">
                         <select 
@@ -497,14 +501,16 @@ const ExampleUI: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value text-accent">$50,000</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">$50,000</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 2</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
                     </div>
-                    <p className="small-text">Proposal 2</p>
-                    <h3 className="text-accent">Title</h3>
-                    <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
                     <div className="w-full flex flex-row justify-between">
                       <div className="max-w-xs">
                         <select className="select select-bordered">
@@ -523,14 +529,16 @@ const ExampleUI: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value text-accent">Unlimited</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">Unlimited</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 3</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
                     </div>
-                    <p className="small-text">Proposal 3</p>
-                    <h3 className="text-accent">Title</h3>
-                    <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
                     <div className="w-full flex flex-row justify-between">
                       <div className="max-w-xs">
                         <select className="select select-bordered">
@@ -559,16 +567,18 @@ const ExampleUI: NextPage = () => {
             <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
               <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
                 <figure><img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /></figure>
-                <div className="text-lg">
-                  <p className=" inline-flex">Location</p>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
-                  <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
-                </div>
-                <div className="text-lg">
-                  <p className="inline-flex">Wallet</p>
-                  <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                <div className="donation-details">
+                  <div className="text-lg">
+                    <p className=" inline-flex">Location</p>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm inline-flex">USA</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Lahaina</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">Maui</span>
+                    <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
+                  </div>
+                  <div className="text-lg">
+                    <p className="inline-flex">Wallet</p>
+                    <span className="inline-flex gap-4 m-sm"><Address address={TREASURY_WALLET} /></span>
+                  </div>
                 </div>
               </div>
               <div className="grid gap-5 p-md">
@@ -579,39 +589,45 @@ const ExampleUI: NextPage = () => {
                   </div>
                 </div>
                 <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
-                  <div className="form-control nested-card bg-light">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value text-accent">$20,000</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between bg-light">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">$20,000</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 1</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
                     </div>
-                    <p className="small-text">Proposal 1</p>
-                    <h3 className="text-accent">Title</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eleifend non sapien a condimentum. Nunc imperdiet lorem non massa lobortis dignissim. Nam at nibh iaculis, sagittis sem non, scelerisque tortor. Phasellus dictum lorem at felis fringilla efficitur sit amet a ante. Pellentesque at molestie velit, eu finibus sem.</p>
                     <div className="w-full text-center">
                       <p className="inline-flex text-accent">Approved and Sent</p>
                       <a href={`https://mumbai.polygonscan.com/address/${TEST_WALLET}`} target="_blank"><img src="./assets/icon-open-browser.svg" className="w-4 ml-sm inline-flex" /></a>
                     </div>
                   </div>
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value text-accent">$50,000</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">$50,000</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 2</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
                     </div>
-                    <p className="small-text">Proposal 2</p>
-                    <h3 className="text-accent">Title</h3>
-                    <p>Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.</p>
                     <div className="w-full flex flex-row text-center">
                       <p>Active</p>
                     </div>
                   </div>
-                  <div className="form-control nested-card">
-                    <div className="stat my-0 place-items-end">
-                      <div className="stat-value text-accent">Unlimited</div>
-                      <div className="stat-desc">Asking</div>
+                  <div className="form-control nested-card place-content-between">
+                    <div>
+                      <div className="stat my-0 place-items-end">
+                        <div className="stat-value text-accent">Unlimited</div>
+                        <div className="stat-desc">Asking</div>
+                      </div>
+                      <p className="small-text">Proposal 3</p>
+                      <h3 className="text-accent">Title</h3>
+                      <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
                     </div>
-                    <p className="small-text">Proposal 3</p>
-                    <h3 className="text-accent">Title</h3>
-                    <p>Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices, augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.</p>
                     <div className="w-full flex flex-row text-center">
                       <p>Active</p>
                     </div>

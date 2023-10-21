@@ -88,10 +88,15 @@ button:focus {
  font-size: 1.875rem;
 }
 
-.haf-purple {
-  /* padding: 0; */
-  /* border-top-left-radius: 1.125rem !important;
-  border-bottom-left-radius: 1.125rem !important; */
+/* .haf-purple {
+  padding: 0;
+  border-top-left-radius: 1.125rem !important;
+  border-bottom-left-radius: 1.125rem !important;
+  margin: 0 auto;
+} */
+
+.donation-details {
+  margin: 0 auto;
 }
 
 label {
