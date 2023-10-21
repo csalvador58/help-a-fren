@@ -3,9 +3,8 @@ import Image from "next/image";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
 import { HafIDFormat } from "~~/components/help-a-fren/haf-id-format";
 import { getAllProposals } from "~~/components/help-a-fren/utils/getAllProposals";
-import { Address } from "~~/components/scaffold-eth";
-import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
-import { TREASURY_WALLET } from "~~/utils/constants";
+import { Address, Balance } from "~~/components/scaffold-eth";
+import { PROJECT_PRICE_MULTIPLIER, TREASURY_WALLET } from "~~/utils/constants";
 
 type ProposalDetails = {
   proposalId: string;
@@ -26,15 +25,27 @@ type Description = {
 
 const VoteForAFrenTest = () => {
   const [proposals, setProposals] = useState<ProposalDetails[]>([]);
-  // const voteHandler = (e: any) => {
-  //   console.log("vote opt", e.target.id);
-  //   // setVoteOptions()
-  // };
+  const [voteOptions, setVoteOptions] = useState<{ [key: string]: string }>({});
+
+  const onVoteChangeHandler = (proposalId: string, selectedVote: string) => {
+    // console.log("voteOptions", voteOptions);
+    setVoteOptions(previousState => {
+      return { ...previousState, [proposalId]: String(selectedVote) };
+    });
+    // Object.entries(voteOptions).forEach(([id, selectedVote]) => {
+    //   if (id === proposalId) {
+    //     console.log(`Proposal ID: ${id}, was changed to => Selected Vote: ${selectedVote}`);
+    //   }
+    // });
+  };
+
+  const submitVoteHandler = (proposalId: string) => {
+    console.log("submitVoteHandler", proposalId);
+  };
 
   useEffect(() => {
     const getProposals = async () => {
       const proposalsFromRegistry = await getAllProposals();
-      console.log("proposals", proposalsFromRegistry);
 
       const proposals = await proposalsFromRegistry.map(async (proposal: any) => {
         // fetch proposal data from ipfs
@@ -68,9 +79,15 @@ const VoteForAFrenTest = () => {
                 <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
               </div>
               <div className="text-lg">
-                <p className="inline-flex">Wallet</p>
+                <p className="inline-flex">Treasury Wallet</p>
                 <span className="inline-flex gap-4 m-sm">
                   <Address address={TREASURY_WALLET} />
+                </span>
+              </div>
+              <div className="text-lg -mt-lg">
+                <p className="inline-flex">Balance</p>
+                <span className="inline-flex gap-4 m-sm">
+                  <Balance address={TREASURY_WALLET} className="min-h-0 h-auto" />
                 </span>
               </div>
             </div>
@@ -91,7 +108,9 @@ const VoteForAFrenTest = () => {
                   <div key={item.proposalId} className="form-control nested-card place-content-between">
                     <div>
                       <div className="stat my-0 place-items-end">
-                        <div className="stat-value text-accent">{`$${+item.description.amount * 100000}`}</div>
+                        <div className="stat-value text-accent">{`$${
+                          +item.description.amount * PROJECT_PRICE_MULTIPLIER
+                        }`}</div>
                         <div className="stat-desc">Asking</div>
                       </div>
                       <div className="text-lg">
@@ -101,84 +120,47 @@ const VoteForAFrenTest = () => {
                         </span>
                       </div>
                       <h3 className="text-accent">{item.description.title || "Not Available"}</h3>
+
+                      <p className="inline-flex">Recipient Name: {item.description.recipient}</p>
+
+                      <div className="text-lg">
+                        <p className="inline-flex">Recipient Address: </p>
+                        <span className="inline-flex gap-4 m-sm">
+                          <Address address={item.description.wallet} />
+                        </span>
+                      </div>
                       <p>Reason: {item.description.reason}</p>
                       <p>Plan: {item.description.use}</p>
                     </div>
                     <div className="w-full flex flex-row justify-between">
                       <div className="max-w-xs">
-                        <select className="select select-bordered" onChange={e => voteHandler(e)}>
-                          <option id="no-vote" disabled selected>
+                        <select
+                          className="select select-bordered"
+                          value={voteOptions[item.proposalId] || ""}
+                          onChange={e => onVoteChangeHandler(item.proposalId, e.target.value)}
+                        >
+                          <option id="no-vote" value="" disabled selected>
                             Select
                           </option>
-                          <option id="for-vote">For</option>
-                          <option id="ag-vote">Against</option>
-                          <option id="ab-vote">Abstain</option>
+                          <option id="for-vote" value="1">
+                            For
+                          </option>
+                          <option id="ag-vote" value="0">
+                            Against
+                          </option>
+                          <option id="ab-vote" value="2">
+                            Abstain
+                          </option>
                         </select>
                       </div>
                       <div className="card-actions">
-                        <button className="btn btn-accent">Submit</button>
+                        <button className="btn btn-accent" onClick={() => submitVoteHandler(item.proposalId)}>
+                          Submit
+                        </button>
                       </div>
                     </div>
                   </div>
                 ))}
-              {/* <div className="form-control nested-card place-content-between">
-                <div>
-                  <div className="stat my-0 place-items-end">
-                    <div className="stat-value text-accent">$50,000</div>
-                    <div className="stat-desc">Asking</div>
-                  </div>
-                  <p className="small-text">Proposal 2</p>
-                  <h3 className="text-accent">Title</h3>
-                  <p>
-                    Donec risus nunc, gravida quis congue et, convallis ut ipsum. In scelerisque dictum diam sit amet
-                    eleifend. Pellentesque non ipsum ac diam cursus aliquet non id est.
-                  </p>
-                </div>
-                <div className="w-full flex flex-row justify-between">
-                  <div className="max-w-xs">
-                    <select className="select select-bordered">
-                      <option disabled selected>
-                        Select
-                      </option>
-                      <option>For</option>
-                      <option>Against</option>
-                      <option>Abstain</option>
-                    </select>
-                  </div>
-                  <div className="card-actions">
-                    <button className="btn btn-accent">Submit</button>
-                  </div>
-                </div>
-              </div>
-              <div className="form-control nested-card place-content-between">
-                <div>
-                  <div className="stat my-0 place-items-end">
-                    <div className="stat-value text-accent">Unlimited</div>
-                    <div className="stat-desc">Asking</div>
-                  </div>
-                  <p className="small-text">Proposal 3</p>
-                  <h3 className="text-accent">Title</h3>
-                  <p>
-                    Sed hendrerit porttitor ex a pulvinar. Pellentesque at accumsan nisi, eu commodo nibh. In ultrices,
-                    augue at bibendum mollis, neque eros aliquet est, vel ullamcorper ex neque ac magna.
-                  </p>
-                </div>
-                <div className="w-full flex flex-row justify-between">
-                  <div className="max-w-xs">
-                    <select className="select select-bordered">
-                      <option disabled selected>
-                        Select
-                      </option>
-                      <option>For</option>
-                      <option>Against</option>
-                      <option>Abstain</option>
-                    </select>
-                  </div>
-                  <div className="card-actions">
-                    <button className="btn btn-accent">Submit</button>
-                  </div>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>

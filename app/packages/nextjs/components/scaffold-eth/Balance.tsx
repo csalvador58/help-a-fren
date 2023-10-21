@@ -1,4 +1,5 @@
 import { useAccountBalance } from "~~/hooks/scaffold-eth";
+import { PROJECT_PRICE_MULTIPLIER } from "~~/utils/constants";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
 
 type TBalanceProps = {
@@ -40,13 +41,17 @@ export const Balance = ({ address, className = "" }: TBalanceProps) => {
       <div className="w-full flex items-center justify-center">
         {isEthBalance ? (
           <>
-            <span>{balance?.toFixed(4)}</span>
-            <span className="text-[0.8em] font-bold ml-1">{configuredNetwork.nativeCurrency.symbol}</span>
+            <span>{+balance?.toFixed(4) * PROJECT_PRICE_MULTIPLIER}</span>
+            <span className="text-[0.8em] font-bold ml-1"> {configuredNetwork.nativeCurrency.symbol}</span>
           </>
         ) : (
           <>
             <span className="text-[0.8em] font-bold mr-1">$</span>
-            <span>{(balance * price).toFixed(2)}</span>
+            {/* <span>{(balance * price * PROJECT_PRICE_MULTIPLIER).toFixed(2)}</span> */}
+            <span>
+              {" "}
+              {(balance * price * PROJECT_PRICE_MULTIPLIER).toLocaleString("en-US", { maximumFractionDigits: 0 })}
+            </span>
           </>
         )}
       </div>

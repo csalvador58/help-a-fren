@@ -15,7 +15,7 @@ export const getAllProposals = async () => {
   );
   const getProposalsTx = await HelpAFrenProposalRegistryContract.getAllProposals();
 
-  console.log("**** getProposalsTx: ");
-  console.log(getProposalsTx);
+//   console.log("**** getProposalsTx: ");
+//   console.log(getProposalsTx);
   return getProposalsTx;
 };

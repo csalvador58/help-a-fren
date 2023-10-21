@@ -1,6 +1,6 @@
 import Image from "next/image";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
-import { Address } from "~~/components/scaffold-eth";
+import { Address, Balance } from "~~/components/scaffold-eth";
 import { TEST_WALLET, TREASURY_WALLET } from "~~/utils/constants";
 
 const ResultsTest = () => {
@@ -26,9 +26,15 @@ const ResultsTest = () => {
                 <span className="badge badge-md badge-accent badge-outline ml-sm  inline-flex">96761</span>
               </div>
               <div className="text-lg">
-                <p className="inline-flex">Wallet</p>
+                <p className="inline-flex">Treasury Wallet</p>
                 <span className="inline-flex gap-4 m-sm">
                   <Address address={TREASURY_WALLET} />
+                </span>
+              </div>
+              <div className="text-lg -mt-lg">
+                <p className="inline-flex">Balance</p>
+                <span className="inline-flex gap-4 m-sm">
+                  <Balance address={TREASURY_WALLET} className="min-h-0 h-auto" />
                 </span>
               </div>
             </div>
