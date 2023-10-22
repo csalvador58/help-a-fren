@@ -1,10 +1,37 @@
-import { Key, use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import {
+  HAF_GOVERNOR_ADDRESS,
+  HAF_NFT_VOTING_ADDRESS,
+  HAF_PROPOSAL_REGISTRY_ADDRESS,
+  HAF_TREASURY_ADDRESS,
+} from "../../../hardhat/utils/constants";
+import hafGovAbi from "../../components/help-a-fren/abi/hafGovAbi.json";
+import hafProposalRegistryAbi from "../../components/help-a-fren/abi/hafProposalRegistryAbi.json";
+import hafTreasuryAbi from "../../components/help-a-fren/abi/hafTreasuryAbi.json";
+import hafVoteTokenAbi from "../../components/help-a-fren/abi/hafVoteTokenAbi.json";
+import { BiconomySmartAccount } from "../../components/help-a-fren/utils/BiconomySA";
+import { MagicLogin } from "../../components/help-a-fren/utils/MagicLogin";
+import { UserOperation } from "@biconomy/core-types";
+import {
+  BiconomyPaymaster,
+  IHybridPaymaster,
+  IPaymaster,
+  PaymasterMode,
+  SponsorUserOperationDto,
+} from "@biconomy/paymaster";
+import { BigNumber, ethers } from "ethers";
+import { type } from "os";
+import { ArrowSmallRightIcon } from "@heroicons/react/24/outline";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
 import { HafIDFormat } from "~~/components/help-a-fren/haf-id-format";
+import { checkVotingPower } from "~~/components/help-a-fren/utils/checkVotePower";
 import { getAllProposals } from "~~/components/help-a-fren/utils/getAllProposals";
 import { Address, Balance } from "~~/components/scaffold-eth";
 import { PROJECT_PRICE_MULTIPLIER, TREASURY_WALLET } from "~~/utils/constants";
+
+// create a type that is an array containing BigNumber, string, string
+type Proposal = [BigNumber, string, string];
 
 type ProposalDetails = {
   proposalId: string;
@@ -26,6 +53,7 @@ type Description = {
 const VoteForAFrenTest = () => {
   const [proposals, setProposals] = useState<ProposalDetails[]>([]);
   const [voteOptions, setVoteOptions] = useState<{ [key: string]: string }>({});
+  const [isMagicActive, setMagicActive] = useState(false);
 
   const onVoteChangeHandler = (proposalId: string, selectedVote: string) => {
     // console.log("voteOptions", voteOptions);
@@ -39,8 +67,202 @@ const VoteForAFrenTest = () => {
     // });
   };
 
-  const submitVoteHandler = (proposalId: string) => {
+  const submitVoteHandler = async (proposalId: string) => {
     console.log("submitVoteHandler", proposalId);
+
+    try {
+      // ==========================================================
+      // Setup Variables
+      // ==========================================================
+      const alchemyProvider = new ethers.providers.AlchemyProvider(
+        "maticmum",
+        process.env.NEXT_PUBLIC_ALCHEMY_KEY || "2olqx6rQSWK3TThRmPvylRkNPbD0dDNj",
+      );
+      const deployer_alchemy = new ethers.Wallet(process.env.NEXT_PUBLIC_DEPLOYER_PK!, alchemyProvider);
+      console.log("**** deployer: ", deployer_alchemy.address);
+
+      // Get HelpAFrenVoteToken contract
+      const HelpAFrenVoteTokenContract = new ethers.Contract(HAF_NFT_VOTING_ADDRESS, hafVoteTokenAbi, alchemyProvider);
+
+      const paymasterServiceData: SponsorUserOperationDto = {
+        mode: PaymasterMode.SPONSORED,
+        smartAccountInfo: {
+          name: "BICONOMY",
+          version: "2.0.0",
+        },
+        // optional params...
+      };
+
+      // ==========================================================
+      // Setup Biconnomy Smart Account with Magic signer
+      // ==========================================================
+      // Get magic instance
+      const magic = await MagicLogin(true);
+      setMagicActive(true);
+
+      // Setup Biconomy Smart Account
+      if (!magic) {
+        console.log("Error during log in, try again.");
+        setMagicActive(false);
+        return;
+      }
+      const biconomySmartAccount = await BiconomySmartAccount(magic.rpcProvider, false);
+      const biconomyAccountAddress = await biconomySmartAccount?.getAccountAddress();
+      console.log("**** biconomyAccountAddress: ", biconomyAccountAddress);
+
+      // Validate wallet address
+      if (!biconomyAccountAddress) {
+        console.log("Error during log in, try again.");
+        setMagicActive(false);
+        return;
+      }
+      console.log("**** wallet: ", biconomyAccountAddress);
+      const walletAddress = ethers.utils.getAddress(biconomyAccountAddress);
+      const validRecipient = ethers.utils.isAddress(walletAddress);
+      if (!validRecipient) {
+        alert("Please enter a valid recipient address.");
+        return;
+      }
+
+      // ==========================================================
+      // Setup Minting Process
+      // ==========================================================
+      const tokenHash = ethers.utils.id(biconomyAccountAddress + proposalId);
+      console.log("tokenHash: ", tokenHash);
+      // take last 7 digits to create token ID
+      const tokenId = ethers.BigNumber.from(tokenHash).toString().slice(-7);
+      console.log("tokenId: ", tokenId);
+
+      // Get proposal uri
+      const proposalsFromRegistry = await getAllProposals();
+      // proposalsFromRegistry.forEach((proposal: Proposal) => {
+      //   if (proposalId === proposal[0].toString()) {
+      //     console.log("proposal[0]: ", proposal[0].toString());
+      //     console.log("proposal[1]: ", proposal[1]);
+      //     console.log("proposal[2]: ", proposal[2]);
+      //   }
+      // });
+      const proposalUri = proposalsFromRegistry.filter(
+        (proposal: Proposal) => proposal[0].toString() === proposalId,
+      )[0][1];
+      console.log("proposalUri: ", proposalUri);
+
+      // ==========================================================
+      // Setup Biconomy Paymaster for Minting Process
+      // ==========================================================
+
+      // setup paymaster transaction to mint
+      const mintTokenCallData = HelpAFrenVoteTokenContract.interface.encodeFunctionData("safeMint", [
+        biconomyAccountAddress,
+        proposalUri,
+        tokenId,
+      ]);
+      const tx_mintToken = {
+        to: HAF_NFT_VOTING_ADDRESS,
+        data: mintTokenCallData,
+      };
+
+      // setup an admin role Biconomy smart account as Vote contract requires MINTER_ROLE
+      const biconomySmartAccount_admin = await BiconomySmartAccount(magic.rpcProvider, true);
+      if (!biconomySmartAccount_admin) {
+        console.log("Missing Biconomy smart account.");
+        return;
+      }
+
+      console.log("Building user op_mint...");
+      const partialUserOp_mint: Partial<UserOperation> = await biconomySmartAccount_admin.buildUserOp([tx_mintToken]);
+      console.log("**** partialUserOp_mint: ");
+      console.log(partialUserOp_mint);
+
+      console.log("Getting paymaster and data...");
+
+      const BiconomyPaymaster_admin = biconomySmartAccount_admin.paymaster as IHybridPaymaster<SponsorUserOperationDto>;
+      const paymasterAndDataResponse_mint = await BiconomyPaymaster_admin.getPaymasterAndData(
+        partialUserOp_mint,
+        paymasterServiceData,
+      );
+      partialUserOp_mint.paymasterAndData = paymasterAndDataResponse_mint.paymasterAndData;
+
+      console.log("**** partialUserOp_mint.paymasterAndData: ");
+      console.log(partialUserOp_mint.paymasterAndData);
+
+      const userOpResponse_mint = await biconomySmartAccount_admin.sendUserOp(partialUserOp_mint);
+      console.log("**** userOpResponse_mint: ");
+      console.log(userOpResponse_mint);
+      const transactionDetails_mint = await userOpResponse_mint.wait();
+
+      console.log("**** transactionDetails_mint: ");
+      console.log(transactionDetails_mint);
+
+      console.log("**** transactionDetails_mint.receipt.transactionHash: ");
+      console.log(transactionDetails_mint.receipt?.transactionHash);
+
+      console.log(" End of minting process.");
+
+      // ==========================================================
+      // Setup Delegate Process
+      // ==========================================================
+
+      // Setup Biconomy user operations to delegate token to voter
+
+      const delegateTokenCallData = HelpAFrenVoteTokenContract.interface.encodeFunctionData("delegate", [
+        biconomyAccountAddress,
+      ]);
+      const tx_delegateToken = {
+        to: HAF_NFT_VOTING_ADDRESS,
+        data: delegateTokenCallData,
+      };
+
+      console.log("Building user op_delegate...");
+      if (!biconomySmartAccount) {
+        console.log("Missing Biconomy smart account.");
+        return;
+      }
+      const partialUserOp_delegate: Partial<UserOperation> = await biconomySmartAccount.buildUserOp([tx_delegateToken]);
+      console.log("**** partialUserOp_delegate: ");
+      console.log(partialUserOp_delegate);
+
+      console.log("Getting paymaster and data...");
+
+      if (!biconomySmartAccount) {
+        console.log("Missing Biconomy smart account.");
+        return;
+      }
+      const BiconomyPaymaster = biconomySmartAccount.paymaster as IHybridPaymaster<SponsorUserOperationDto>;
+      const paymasterAndDataResponse_delegate = await BiconomyPaymaster.getPaymasterAndData(
+        partialUserOp_delegate,
+        paymasterServiceData,
+      );
+      partialUserOp_delegate.paymasterAndData = paymasterAndDataResponse_delegate.paymasterAndData;
+
+      console.log("**** partialUserOp_delegate.paymasterAndData: ");
+      console.log(partialUserOp_delegate.paymasterAndData);
+
+      const userOpResponse_delegate = await biconomySmartAccount.sendUserOp(partialUserOp_delegate);
+      console.log("**** userOpResponse_delegate: ");
+      console.log(userOpResponse_delegate);
+      const transactionDetails_delegate = await userOpResponse_delegate.wait();
+
+      console.log("**** transactionDetails_delegate: ");
+      console.log(transactionDetails_delegate);
+
+      console.log("**** transactionDetails_delegate.receipt.transactionHash: ");
+      console.log(transactionDetails_delegate.receipt?.transactionHash);
+
+      console.log(" End of delegate process.");
+
+      // check vote power
+      const votingPower = await checkVotingPower(biconomyAccountAddress);
+      console.log(`**** votingPower for ${biconomyAccountAddress}: `, votingPower);
+      if (votingPower && +votingPower < 1) {
+        console.log("No vote power, minting and delegate process failed.");
+        return;
+      }
+
+      // Generate token ID
+    } catch (error) {
+      console.log("Error: ", error);
+    }
   };
 
   useEffect(() => {
@@ -60,6 +282,74 @@ const VoteForAFrenTest = () => {
     };
     getProposals();
   }, []);
+
+  // ==========================================================
+  // TEST FUNCTIONS ONLY
+  // ==========================================================
+  const getMagicUserInfo = async () => {
+    const magic = await MagicLogin(true);
+    if (magic) {
+      const userInfo = await magic?.user.getInfo();
+      console.log(userInfo);
+    } else {
+      console.log("Error during log in, try again.");
+      setMagicActive(false);
+    }
+  };
+  const logInMagic = async () => {
+    const magic = await MagicLogin(true);
+    if (magic) {
+      console.log("Magic log in status: ", await magic?.user.isLoggedIn());
+      setMagicActive(true);
+    } else {
+      console.log("Error during log in, try again.");
+      setMagicActive(false);
+    }
+  };
+  const logoutMagic = async () => {
+    const magic = await MagicLogin(false);
+    if (magic) {
+      await magic.user.logout();
+      console.log("Magic logged out");
+    }
+    setMagicActive(false);
+  };
+  const biconomyTest = async () => {
+    // Get magic instance
+    const magic = await MagicLogin(true);
+
+    // Setup Biconomy Smart Account
+    if (!magic) {
+      console.log("Error during log in, try again.");
+      setMagicActive(false);
+      return;
+    }
+    const biconomySmartAccount = await BiconomySmartAccount(magic.rpcProvider, true);
+    const accountAddress = await biconomySmartAccount?.getAccountAddress();
+    console.log("**** accountAddress: ", accountAddress);
+  };
+
+  const getAllProposalData = async () => {
+    const alchemyProvider = new ethers.providers.AlchemyProvider(
+      "maticmum",
+      process.env.NEXT_PUBLIC_ALCHEMY_KEY || "2olqx6rQSWK3TThRmPvylRkNPbD0dDNj",
+    );
+    const HelpAFrenProposalRegistryContract = new ethers.Contract(
+      HAF_PROPOSAL_REGISTRY_ADDRESS,
+      hafProposalRegistryAbi,
+      alchemyProvider,
+    );
+    const getProposalsTx = await HelpAFrenProposalRegistryContract.getAllProposals();
+
+    console.log("**** getProposalsTx: ");
+    console.log(getProposalsTx);
+  };
+  const getVotePower = async () => {
+    const result = await checkVotingPower("0x76547B92b4ACd742b0FA18384e95945a5b8dE3AD");
+
+    console.log("**** checkVotingPower: ");
+    console.log(result!.toString());
+  };
 
   return (
     <HafCardWrap>
@@ -157,6 +447,28 @@ const VoteForAFrenTest = () => {
                         <button className="btn btn-accent" onClick={() => submitVoteHandler(item.proposalId)}>
                           Submit
                         </button>
+
+                        {/* Test section */}
+                        <div className="card-actions justify-end my-md">
+                          <button className="btn btn-accent" onClick={getMagicUserInfo}>
+                            get user info <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                          </button>
+                          <button className="btn btn-accent" onClick={logInMagic}>
+                            logInMagic <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                          </button>
+                          <button className="btn btn-accent" onClick={logoutMagic}>
+                            logOutMagic <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                          </button>
+                          <button className="btn btn-accent" onClick={biconomyTest}>
+                            Biconomy <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                          </button>
+                          <button className="btn btn-accent" onClick={getAllProposalData}>
+                            getAllProposalData <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                          </button>
+                          <button className="btn btn-accent" onClick={getVotePower}>
+                            getVotePower <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
