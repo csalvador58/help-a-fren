@@ -25,9 +25,12 @@ import { type } from "os";
 import { ArrowSmallRightIcon } from "@heroicons/react/24/outline";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
 import { HafIDFormat } from "~~/components/help-a-fren/haf-id-format";
+import { checkProposalState } from "~~/components/help-a-fren/utils/checkProposalState";
+import { checkProposalVotes } from "~~/components/help-a-fren/utils/checkProposalVotes";
 import { checkVotingPower } from "~~/components/help-a-fren/utils/checkVotePower";
 import { getAllProposals } from "~~/components/help-a-fren/utils/getAllProposals";
 import { Address, Balance } from "~~/components/scaffold-eth";
+import { useAccountBalance } from "~~/hooks/scaffold-eth";
 import { PROJECT_PRICE_MULTIPLIER, TREASURY_WALLET } from "~~/utils/constants";
 
 // create a type that is an array containing BigNumber, string, string
@@ -54,6 +57,7 @@ const VoteForAFrenTest = () => {
   const [proposals, setProposals] = useState<ProposalDetails[]>([]);
   const [voteOptions, setVoteOptions] = useState<{ [key: string]: string }>({});
   const [isMagicActive, setMagicActive] = useState(false);
+  // const { balance, price, isError, isLoading, onToggleBalance, isEthBalance } = useAccountBalance(HAF_TREASURY_ADDRESS);
 
   const onVoteChangeHandler = (proposalId: string, selectedVote: string) => {
     // console.log("voteOptions", voteOptions);
@@ -81,8 +85,9 @@ const VoteForAFrenTest = () => {
       const deployer_alchemy = new ethers.Wallet(process.env.NEXT_PUBLIC_DEPLOYER_PK!, alchemyProvider);
       console.log("**** deployer: ", deployer_alchemy.address);
 
-      // Get HelpAFrenVoteToken contract
+      // Get contracts
       const HelpAFrenVoteTokenContract = new ethers.Contract(HAF_NFT_VOTING_ADDRESS, hafVoteTokenAbi, alchemyProvider);
+      const HelpAFrenGovContract = new ethers.Contract(HAF_GOVERNOR_ADDRESS, hafGovAbi, alchemyProvider);
 
       const paymasterServiceData: SponsorUserOperationDto = {
         mode: PaymasterMode.SPONSORED,
@@ -148,7 +153,7 @@ const VoteForAFrenTest = () => {
       console.log("proposalUri: ", proposalUri);
 
       // ==========================================================
-      // Setup Biconomy Paymaster for Minting Process
+      // Run Biconomy Paymaster for Minting Process
       // ==========================================================
 
       // setup paymaster transaction to mint
@@ -200,7 +205,7 @@ const VoteForAFrenTest = () => {
       console.log(" End of minting process.");
 
       // ==========================================================
-      // Setup Delegate Process
+      // Run Token Delegate Process
       // ==========================================================
 
       // Setup Biconomy user operations to delegate token to voter
@@ -259,7 +264,75 @@ const VoteForAFrenTest = () => {
         return;
       }
 
-      // Generate token ID
+      // ==========================================================
+      // Submit Vote for voter
+      // ==========================================================
+
+      // Proposal States
+      //   0 - Pending,
+      //   1 - Active,
+      //   2 - Canceled,
+      //   3 - Defeated,
+      //   4 - Succeeded,
+      //   5 - Queued,
+      //   6 - Expired,
+      //   7 - Executed
+
+      // Check Proposal State, must be 0 or 1 to accept a vote
+      let currentProposalState = await checkProposalState(proposalId);
+      console.log("**** currentProposalState: ", currentProposalState);
+
+      const voteSelected = voteOptions[proposalId];
+      const proposalIdToBigNumber = ethers.BigNumber.from(proposalId);
+      console.log("voteSelected", voteSelected);
+      console.log("proposalIdToBigNumber", proposalIdToBigNumber);
+
+      // Setup Biconomy user operations to vote on proposal
+      const voteCallData = HelpAFrenGovContract.interface.encodeFunctionData("castVote", [
+        proposalIdToBigNumber,
+        +voteSelected,
+      ]);
+      const tx_vote = {
+        to: HAF_GOVERNOR_ADDRESS,
+        data: voteCallData,
+      };
+
+      console.log("Building user op_vote...");
+      if (!biconomySmartAccount) {
+        console.log("Missing Biconomy smart account.");
+        return;
+      }
+      const partialUserOp_vote: Partial<UserOperation> = await biconomySmartAccount.buildUserOp([tx_vote]);
+      console.log("**** partialUserOp_vote: ");
+      console.log(partialUserOp_vote);
+
+      console.log("Getting paymaster and data...");
+
+      const paymasterAndDataResponse_vote = await BiconomyPaymaster.getPaymasterAndData(
+        partialUserOp_vote,
+        paymasterServiceData,
+      );
+      partialUserOp_vote.paymasterAndData = paymasterAndDataResponse_vote.paymasterAndData;
+
+      console.log("**** partialUserOp_vote.paymasterAndData: ");
+      console.log(partialUserOp_vote.paymasterAndData);
+
+      const userOpResponse_vote = await biconomySmartAccount.sendUserOp(partialUserOp_vote);
+      console.log("**** userOpResponse_vote: ");
+      console.log(userOpResponse_vote);
+      const transactionDetails_vote = await userOpResponse_vote.wait();
+
+      console.log("**** transactionDetails_vote: ");
+      console.log(transactionDetails_vote);
+
+      console.log("**** transactionDetails_vote.receipt.transactionHash: ");
+      console.log(transactionDetails_vote.receipt?.transactionHash);
+
+      console.log(" End of vote process.");
+
+      // Check Proposal State, must be 0 or 1 to accept a vote
+      currentProposalState = await checkProposalState(proposalId);
+      console.log("**** currentProposalState: ", currentProposalState);
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -350,6 +423,15 @@ const VoteForAFrenTest = () => {
     console.log("**** checkVotingPower: ");
     console.log(result!.toString());
   };
+  const getProposalState = async (proposalId: string) => {
+    console.log("proposalId", proposalId);
+    const result = await checkProposalState(proposalId);
+
+    console.log("**** checkProposalState: ");
+    console.log(result!.toString());
+
+    await checkProposalVotes(proposalId);
+  };
 
   return (
     <HafCardWrap>
@@ -398,9 +480,7 @@ const VoteForAFrenTest = () => {
                   <div key={item.proposalId} className="form-control nested-card place-content-between">
                     <div>
                       <div className="stat my-0 place-items-end">
-                        <div className="stat-value text-accent">{`$${
-                          +item.description.amount * PROJECT_PRICE_MULTIPLIER
-                        }`}</div>
+                        <div className="stat-value text-accent">{`$${item.description.amount}`}</div>
                         <div className="stat-desc">Asking</div>
                       </div>
                       <div className="text-lg">
@@ -467,6 +547,9 @@ const VoteForAFrenTest = () => {
                           </button>
                           <button className="btn btn-accent" onClick={getVotePower}>
                             getVotePower <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+                          </button>
+                          <button className="btn btn-accent" onClick={() => getProposalState(item.proposalId)}>
+                            getProposalState <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
                           </button>
                         </div>
                       </div>

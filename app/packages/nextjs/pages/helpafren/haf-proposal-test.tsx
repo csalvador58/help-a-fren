@@ -12,7 +12,7 @@ import { BiconomySmartAccount } from "../../components/help-a-fren/utils/Biconom
 import { MagicLogin } from "../../components/help-a-fren/utils/MagicLogin";
 import { getProposalIdFromTx } from "../../components/help-a-fren/utils/getProposalIdFromTx";
 import { Metadata, uploadMetadata } from "../../components/help-a-fren/utils/uploadToIPFS";
-import { NFT_IMAGE_CID } from "../../utils/constants";
+import { NFT_IMAGE_CID, PROJECT_PRICE_MULTIPLIER } from "../../utils/constants";
 import { UserOperation } from "@biconomy/core-types";
 import {
   BiconomyPaymaster,
@@ -25,6 +25,7 @@ import { ethers } from "ethers";
 import { ArrowSmallRightIcon } from "@heroicons/react/24/outline";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
 import { Address, Balance } from "~~/components/scaffold-eth";
+import { useAccountBalance } from "~~/hooks/scaffold-eth";
 import { TREASURY_WALLET } from "~~/utils/constants";
 
 interface IProposalDetails {
@@ -68,6 +69,7 @@ const ProposalTest = ({
   const [isMagicActive, setMagicActive] = useState(false);
   const [isRadio1Checked, setIsRadio1Checked] = useState(true);
   const [isRadio2Checked, setIsRadio2Checked] = useState(false);
+  // const { balance, price, isError, isLoading, onToggleBalance, isEthBalance } = useAccountBalance(HAF_TREASURY_ADDRESS);
 
   const handleRadioChange = () => {
     setIsRadio1Checked(!isRadio1Checked);
@@ -123,6 +125,10 @@ const ProposalTest = ({
         const values = [data.submitter, data.wallet, data.title, data.recipient, data.reason, data.use];
         return abiCoder.encode(types, values);
       };
+
+      // converted amount to Project's Price Multiplier
+      const amountConverted = (+amount / PROJECT_PRICE_MULTIPLIER).toString();
+      console.log("**** amount converted to project's token multiple: ", amountConverted);
       const proposalDetails: IProposalDetails = {
         submitter: submitter,
         wallet: wallet,
@@ -130,7 +136,7 @@ const ProposalTest = ({
         recipient: recipient,
         reason: reason,
         use: use,
-        amount: amount,
+        amount: amountConverted,
       };
 
       const encodedProposalDetails = encodeData(proposalDetails);
@@ -158,7 +164,7 @@ const ProposalTest = ({
 
       // Setup Biconomy user operations
       //   const grantAmount = ethers.BigNumber.from(amount);
-      const grantAmount = ethers.utils.parseEther(amount || "0");
+      const grantAmount = ethers.utils.parseEther(amountConverted || "0");
       const web3Provider = new ethers.providers.Web3Provider(magic.rpcProvider as any);
 
       // Call data for grant withdraw to include with governor proposal
