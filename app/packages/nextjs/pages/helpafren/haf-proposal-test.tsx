@@ -557,7 +557,7 @@ const ProposalTest = ({
               </label>
               <input
                 type="text"
-                placeholder="$"
+                placeholder="MATIC"
                 className="input input-bordered w-44 max-w-xs"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}

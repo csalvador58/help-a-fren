@@ -86,8 +86,10 @@ https://github.com/csalvador58/help-a-fren/blob/d628f2555d9f85514ac1c4330e7e665a
 - [Remix](https://remix.ethereum.org/) - Toolkit used for debugging and testing.
 - [Pinata](https://www.pinata.cloud/) - Used for IPFS Pinning during NFT Vote token minting and proposal registry.
 
-## ✅ Frontend/UI
+## ✅ Frontend/UX/Design
 
+- [Figma Design](https://miro.com/app/board/uXjVNdP0u54=/) - Wireframes and Theme.
+- [Miro Board Design](https://www.figma.com/file/x9TDGlRIUec22OUvGr4QBz/Help-A-Fren?type=design&node-id=0%3A1&mode=design&t=QK2wc1uirXZJYJfn-1) - User Flow, Story Map and Planning.
 - [Scaffold-ETH-2](https://docs.scaffoldeth.io/)
 - [Next JS](https://nextjs.org/)
 - [Daisy UI](https://daisyui.com/)
