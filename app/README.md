@@ -10,32 +10,39 @@ In the building process, we are using the recent Maui Fires as inspiration to in
 In theory, this application would become the go-to for instances like these. Furthermore, you would only need one activation launch, eliminating the restrictions, fees, and duplication that come with platforms like GoFund Me or Instagram Fundraiser.
 
 ## Our Vision:
-In this project, we mimic DAO governance while applying account abstraction and incorporate geolocation for a simplified user experience. For demo purposes, our backstory is that this is indeed the case throughout the world. Pretending that every community in every county has a designated wallet that is indicated on and easily found on each government website respectively. As the wallets belong to a specific geolocation, Digital Identities (DIDs) and verifiable credentials (VCs) would be used to ensure that only verified members of each community are given the ability to have a say in what and how donation funds are distributed. In this scenario, a Maui official or leader would take up the organizer role. To initiate Help-A-Fren, an organizer must first submit a Plea For Help. Once submitted, any member of the affected community can request aid through the Proposal form. Using a account abstraction toolkit like Magic that supports DIDs, we can ensure that only proposals submitted by community members are accepted. To vote, one must login through Magic to verify that they are authorized via geolocation to participate in voting. The voting portal has listed all of the approved and active proposals submitted by community members in need of assistance. It provides a description of why they are requesting help, how they will use the funds they receive, and their requested amount of funds. Voters must select for, against, or to abstain from the proposal. Once a proposal reaches the required voting count threshold, the proposal can be executed on to release requested funds to the address the proposer provided in their request form. Results and statuses of each proposal, as well as the addresses for each transaction can be viewed on the Results page, which can be viewed by anyone in the world. 
+In this project, we mimic a DAO governance while applying account abstraction and incorporate geolocation for a simplified user experience. For demo purposes, our backstory is that this is indeed the case throughout the world. Every community in every county has a designated wallet that is indicated on and easily found on each government website respectively. As the wallets belong to a specific geolocation, Digital Identities (DIDs) and verifiable credentials (VCs) would be used to ensure that only verified members of each community are given the ability to have a say in what and how donation funds are distributed. In this scenario, a Maui official or leader would take up the organizer role. To initiate Help-A-Fren, an organizer must first submit a Plea For Help. Once submitted, any member of the affected community can request aid through the Proposal form. Using a account abstraction toolkit like Magic that supports DIDs, we can ensure that only proposals submitted by community members are accepted. To vote, one must login through Magic to verify that they are authorized via geolocation to participate in voting. The voting portal has listed all of the approved and active proposals submitted by community members in need of assistance. It provides a description of why they are requesting help, how they will use the funds they receive, and their requested amount of funds. Voters must select for, against, or to abstain from the proposal. Once a proposal reaches the required voting count threshold, the proposal can be executed on to release requested funds to the address the proposer provided in their request form. Results and statuses of each proposal, as well as the addresses for each transaction can be viewed on the Results page, which can be viewed by anyone in the world. 
 
 ## Our Progress:
-In this version we were able to produce a fully functional DAO governance application with account abstraction.  A proposer user is able to submit a proposal on-chain without the need for a soft/hard wallet with the use of Magic and Biconomy toolkits.  Additionally, voters have the same UX experience to submit votes on-chain.  We were not able to fully implement a DID trust triangle (Issuer, Holder, Verifier) as planned and look forward to adding in Polygon ID in the next iteration.  The use of DIDs and verifiable credentials would also allow for a geolocation feature we initially planned to only allow authorized members of a community based on residence to affect the proposals and governance in our protocol. 
+In this version we were able to produce a DAO governance application with account abstraction.  A proposer user is able to submit a proposal on-chain without the need for a soft/hard wallet with the use of Magic and Biconomy toolkits.  Additionally, voters have the same UX experience to submit votes on-chain.  We were not able to fully implement a DID trust triangle (Issuer, Holder, Verifier) as planned and look forward to adding in Polygon ID in the next iteration.  The use of DIDs and verifiable credentials would also allow for a geolocation feature we initially planned to only allow authorized members of a community based on residence to affect the proposals and governance in our protocol. 
 
 # Walkthrough
 
 1. An organizer can start a *Please for Help* for any cause, community, or individual in need of help.
+
 ![Plea for help](packages/nextjs/public/assets/1-haf-plea.png)
 
 2. Donors will search for any *Plea for Help* and make donations into the designated treasury fund wallet.
+
 ![Making a Donation](packages/nextjs/public/assets/2-haf-donations.png)
 
 3. A Proposer will fill out a form to submit a proposal to make use of available funds. After a determined time, the voting period will begin.
+
 ![Submitting a Proposal](packages/nextjs/public/assets/3-haf-proposal.png)
 
 4. Authorization is require via a Magic sign-in link forcing a user to receive and respond with the emailed One-Time-Password.
+
 ![Magic Login](packages/nextjs/public/assets/4-haf-magic.png)
 
 5. A voter will view proposals and select a vote *(For, Against, Abstain)* on the proposal during the voting period.
+
 ![Voting](packages/nextjs/public/assets/5-haf-vote.png)
 
-6. During the vote submittal process, a voting NFT token is minted for the voter and delegated to enable a voting power. The NFT token is transferred to their Smart Account that was generated with Magic/Biconomy authorization process.  The token ID is created by taking the last 7 characters of the hash created from the voter's smart account address and proposal ID. The NFT meta data also includes the proposal details uploaded to IPFS.
+6. During the vote submittal process, a voting NFT token is minted for the voter and delegated to enable a voting power. The NFT token is transferred to a Smart Account that was generated with Magic/Biconomy authorization process.  The token ID is created by with last 7 characters of a hash created from the voter's smart account address and proposal ID. The NFT meta data also includes the proposal details uploaded to IPFS. 
+
 ![Vote Token](packages/nextjs/public/assets/7-haf-token.png)
 
 7. If a proposal receives a sufficient amount of votes and the voting period has ended, the proposal will be available to execute and send the proposed funds to the intended recipient's wallet address. 
+
 ![Results](packages/nextjs/public/assets/6-haf-results.png)
 
 
@@ -89,6 +96,7 @@ In this version we were able to produce a fully functional DAO governance applic
 - [Hardhat package env](app/packages/hardhat/.env.example) - To use this env template, copy this file, rename it .env, and fill in the values.
 - [NextJS package env](app/packages/nextjs/.env.local.example) - To use this env template, copy this file, rename it .env.local, and fill in the values.
 - [Setting up Biconomy Paymaster policies](https://docs.biconomy.io/docs/category/biconomy-dashboard) are required if deploying your own smart contracts.
+
 
 ```
 # Clone repo and install dependencies
