@@ -302,8 +302,9 @@ const ResultsTest = () => {
                   <div key={item.proposalId} className="form-control nested-card place-content-between">
                     <div>
                       <div className="stat my-0 place-items-end">
-                        <div className="stat-value text-accent">{`$${item.description.amount}`}</div>
-                        <div className="stat-desc">Asking</div>
+                        <div className="stat-title text-xs">Asking</div>
+                        <div className="stat-value text-accent">{`${item.description.amount}`}</div>
+                        <div className="stat-desc">MATIC</div>
                       </div>
                       <div className="text-lg">
                         <p className="small-text inline-flex">Proposal ID: </p>
@@ -326,9 +327,9 @@ const ResultsTest = () => {
                     </div>
                     {item.state && PROPOSAL_STATES[item.state] === "Succeeded" && (
                       // {
-                      <div className="card-actions flex justify-center">
+                      <div className="card-actions flex justify-center mt-md">
                         <button className="btn btn-accent" onClick={() => executeHandler(item.proposalId)}>
-                          Send Funds to Recipient
+                          SEND FUNDS TO RECIPIENT
                         </button>
                       </div>
                     )}
