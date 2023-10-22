@@ -97,6 +97,7 @@ In this version we were able to produce a DAO governance application with accoun
 - [NextJS package env](app/packages/nextjs/.env.local.example) - To use this env template, copy this file, rename it .env.local, and fill in the values.
 - [Setting up Biconomy Paymaster policies](https://docs.biconomy.io/docs/category/biconomy-dashboard) are required if deploying your own smart contracts.
 
+
 ```
 # Clone repo and install dependencies
 
