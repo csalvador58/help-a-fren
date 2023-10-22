@@ -21,7 +21,6 @@ import {
   SponsorUserOperationDto,
 } from "@biconomy/paymaster";
 import { BigNumber, ethers } from "ethers";
-import { type } from "os";
 import { ArrowSmallRightIcon } from "@heroicons/react/24/outline";
 import HafCardWrap from "~~/components/help-a-fren/haf-card-wrap";
 import { HafIDFormat } from "~~/components/help-a-fren/haf-id-format";
@@ -33,7 +32,6 @@ import { Address, Balance } from "~~/components/scaffold-eth";
 import { useAccountBalance } from "~~/hooks/scaffold-eth";
 import { PROJECT_PRICE_MULTIPLIER, TREASURY_WALLET } from "~~/utils/constants";
 
-// create a type that is an array containing BigNumber, string, string
 type Proposal = [BigNumber, string, string];
 
 type ProposalDetails = {
@@ -201,6 +199,11 @@ const VoteForAFrenTest = () => {
 
       console.log("**** transactionDetails_mint.receipt.transactionHash: ");
       console.log(transactionDetails_mint.receipt?.transactionHash);
+
+      console.log(transactionDetails_mint.success);
+      if (transactionDetails_mint.success.toString() === "false") {
+        throw new Error("Minting process failed.");
+      }
 
       console.log(" End of minting process.");
 
@@ -397,7 +400,7 @@ const VoteForAFrenTest = () => {
       setMagicActive(false);
       return;
     }
-    const biconomySmartAccount = await BiconomySmartAccount(magic.rpcProvider, true);
+    const biconomySmartAccount = await BiconomySmartAccount(magic.rpcProvider, false);
     const accountAddress = await biconomySmartAccount?.getAccountAddress();
     console.log("**** accountAddress: ", accountAddress);
   };
@@ -418,7 +421,7 @@ const VoteForAFrenTest = () => {
     console.log(getProposalsTx);
   };
   const getVotePower = async () => {
-    const result = await checkVotingPower("0x76547B92b4ACd742b0FA18384e95945a5b8dE3AD");
+    const result = await checkVotingPower("0x4E1FFEA5a84AdB810f79dAc6b59aAEa21834BfBb");
 
     console.log("**** checkVotingPower: ");
     console.log(result!.toString());
@@ -428,9 +431,11 @@ const VoteForAFrenTest = () => {
     const result = await checkProposalState(proposalId);
 
     console.log("**** checkProposalState: ");
-    console.log(result!.toString());
+    console.log(result);
 
-    await checkProposalVotes(proposalId);
+    const checkVotes = await checkProposalVotes(proposalId);
+    console.log("**** checkVotes: ");
+    console.log(checkVotes);
   };
 
   return (

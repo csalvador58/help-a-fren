@@ -564,14 +564,14 @@ const ProposalTest = ({
               </label>
             </div>
             <div className="card-actions justify-end my-md">
-              <button className="btn btn-accent outline-none">Submit</button>
-              <button className="btn btn-accent" onClick={clearFormHandler}>
+              {/* <button className="btn btn-accent outline-none">Submit</button> */}
+              {/* <button className="btn btn-accent" onClick={clearFormHandler}>
                 Clear Form <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
+              </button> */}
+              <button className="btn btn-accent outline-none" onClick={submitProposalHandler}>
+                Submit
               </button>
-              <button className="btn btn-accent" onClick={submitProposalHandler}>
-                Submit <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-              </button>
-              <button className="btn btn-accent" onClick={getMagicUserInfo}>
+              {/* <button className="btn btn-accent" onClick={getMagicUserInfo}>
                 get user info <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
               </button>
               <button className="btn btn-accent" onClick={logInMagic}>
@@ -588,7 +588,7 @@ const ProposalTest = ({
               </button>
               <button className="btn btn-accent" onClick={getAllProposalData}>
                 getAllProposalData <ArrowSmallRightIcon className="w-3 h-3 mt-0.5" />
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

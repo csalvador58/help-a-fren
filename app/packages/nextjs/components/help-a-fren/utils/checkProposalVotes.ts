@@ -2,7 +2,14 @@ import { HAF_GOVERNOR_ADDRESS } from "../../../../hardhat/utils/constants";
 import hafGovAbi from "../abi/hafGovAbi.json";
 import { ethers } from "ethers";
 
-export const checkProposalVotes = async (proposalID: string): Promise<string> => {
+export type ProposalVotes = {
+  state?: string;
+  votesFor?: string;
+  votesAgainst?: string;
+  votesAbstain?: string;
+};
+
+export const checkProposalVotes = async (proposalID: string): Promise<ProposalVotes> => {
   // create provider from alchemy
   const alchemyProvider = new ethers.providers.AlchemyProvider(
     "maticmum",
@@ -27,9 +34,15 @@ export const checkProposalVotes = async (proposalID: string): Promise<string> =>
 
   // Display proposal votes
   const { againstVotes, forVotes, abstainVotes } = await HelpAFrenGovernorContract.proposalVotes(proposalID.toString());
-  console.log(`Votes For: ${forVotes.toString()}`);
-  console.log(`Votes Against: ${againstVotes.toString()}`);
-  console.log(`Votes Abstain: ${abstainVotes.toString()}`);
+//   console.log(`Votes For: ${forVotes.toString()}`);
+//   console.log(`Votes Against: ${againstVotes.toString()}`);
+//   console.log(`Votes Abstain: ${abstainVotes.toString()}`);
 
-  return proposalState.toString();
+  return {
+    state: proposalState.toString(),
+    votesFor: forVotes.toString(),
+    votesAgainst: againstVotes.toString(),
+    votesAbstain: abstainVotes.toString(),
+  };
 };
+
