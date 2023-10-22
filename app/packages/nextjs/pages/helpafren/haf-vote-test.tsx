@@ -528,7 +528,7 @@ const VoteForAFrenTest = () => {
                   successfully cast votes. Be sure to submit each proposal vote in order for it to count.
                 </p>
               </div>
-              {isMagicActive && (
+              {!isMagicActive && (
                 <div className="grid p-6 nested-card-wrapper place-content-center">
                   <div className="card-header max-w-lg nested-card">
                     <p className="card-title">Confirm your identity</p>
@@ -542,14 +542,15 @@ const VoteForAFrenTest = () => {
               )}
             </div>
             <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
-              {!isMagicActive &&
+              {isMagicActive &&
                 proposals &&
                 proposals.map((item: ProposalDetails) => (
                   <div key={item.proposalId} className="form-control nested-card place-content-between">
                     <div>
                       <div className="stat my-0 place-items-end">
-                        <div className="stat-value text-accent">{`$${item.description.amount}`}</div>
-                        <div className="stat-desc">Asking</div>
+                        <div className="stat-title text-xs">Asking</div>
+                        <div className="stat-value text-accent">{`${item.description.amount}`}</div>
+                        <div className="stat-desc">MATIC</div>
                       </div>
                       <div className="text-lg">
                         <p className="small-text inline-flex">Proposal ID: </p>
