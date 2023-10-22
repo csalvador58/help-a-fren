@@ -260,10 +260,9 @@ const ResultsTest = () => {
     <HafCardWrap>
       <div className="card w-full bg-base-100 shadow-xl">
         <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
-          <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+          <div className="haf-purple grid gap-5 p-xl place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
             <figure>
-              {/* <img src="/haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /> */}
-              <Image src="/haf-logo-drop-shadow.svg" alt="Help-A-Fren Logo" width={350} height={350} />
+              <Image src="/haf-logo-drop-shadow.svg" alt="Help-A-Fren Logo" width={325} height={237} />
             </figure>
             <div className="donation-details">
               <div className="text-lg">
@@ -281,7 +280,7 @@ const ResultsTest = () => {
               </div>
               <div className="text-lg -mt-lg">
                 <p className="inline-flex">Balance</p>
-                <span className="inline-flex gap-4 m-sm">
+                <span className="inline-flex m-xs">
                   <Balance address={TREASURY_WALLET} className="min-h-0 h-auto" />
                 </span>
               </div>
@@ -312,22 +311,18 @@ const ResultsTest = () => {
                           <HafIDFormat address={item.proposalId} />
                         </span>
                       </div>
-                      <h3 className="text-accent">{item.description.title || "Not Available"}</h3>
-
-                      <p className="inline-flex">Recipient Name: {item.description.recipient}</p>
-
-                      <div className="text-lg">
-                        <p className="inline-flex">Recipient Address: </p>
-                        <span className="inline-flex gap-4 m-sm">
-                          <Address address={item.description.wallet} />
-                        </span>
-                      </div>
-                      <p>Reason: {item.description.reason}</p>
-                      <p>Plan: {item.description.use}</p>
-                      <p>Proposal State: {item.state ? PROPOSAL_STATES[item.state] : PROPOSAL_STATES[8]}</p>
-                      <p>Votes For: {item.votesFor}</p>
-                      <p>Votes Against: {item.votesAgainst}</p>
-                      <p>Votes Abstain: {item.votesAbstain}</p>
+                      <h3 className="text-accent mt-sm mb-xl">{item.description.title || "Not Available"}</h3>
+                      <p><span className=" mt-0 font-bold">Recipient:</span> {item.description.recipient}</p>
+                      <p className="inline-flex m-0 font-bold">Address: </p>
+                      <span className="inline-flex ml-sm">
+                        <Address address={item.description.wallet} />
+                      </span>
+                      <p><span className="mt-0 font-bold">Reason:</span> {item.description.reason}</p>
+                      <p><span className="mt-0 font-bold">Plan:</span> {item.description.use}</p>
+                      <p><span className="mt-0 font-bold">Proposal State:</span> {item.state ? PROPOSAL_STATES[item.state] : PROPOSAL_STATES[8]}</p>
+                      <p><span className="mt-0 font-bold">Votes For:</span> {item.votesFor}</p>
+                      <p><span className="mt-0 font-bold">Votes Against:</span> {item.votesAgainst}</p>
+                      <p><span className="mt-0 font-bold">Votes Abstain:</span> {item.votesAbstain}</p>
                     </div>
                     {item.state && PROPOSAL_STATES[item.state] === "Succeeded" && (
                       // {
@@ -340,11 +335,19 @@ const ResultsTest = () => {
                     {item.state && PROPOSAL_STATES[item.state] === "Executed" && (
                       // {(
                       <>
-                        <div className="text-lg">
-                          <p className="inline-flex">Funds sent to the Recipient Address: </p>
+                        <div className="self-center my-md">
+                          {/* <p className="inline-flex">FUNDS SENT TO RECIPIENT</p>
                           <span className="inline-flex gap-4 m-sm">
                             <Address address={item.description.wallet} />
-                          </span>
+                          </span> */}
+                          <a
+                            className={`font-normal text-sm badge badge-md badge-success text-accent ml-xs`}
+                            target="_blank"
+                            href={`https://mumbai.polygonscan.com/address/${item.description.wallet}`}
+                            rel="noopener noreferrer"
+                            >
+                            FUNDS SENT TO RECIPIENT
+                          </a>
                         </div>
                       </>
                     )}

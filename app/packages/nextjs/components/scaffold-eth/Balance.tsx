@@ -34,21 +34,22 @@ export const Balance = ({ address, className = "" }: TBalanceProps) => {
   }
 
   return (
+    // ml-1.5 text-${size} font-normal bg-gray text-sm badge badge-md badge-accent badge-outline ml-xs
     <button
-      className={`btn btn-sm btn-ghost flex flex-col font-normal items-center hover:bg-transparent ${className}`}
+      className={`btn btn-sm btn-ghost shadow-none flex flex-col font-normal items-center hover:bg-transparent ${className}`}
       onClick={onToggleBalance}
     >
       <div className="w-full flex items-center justify-center">
         {isEthBalance ? (
           <>
-            <span>{+balance?.toFixed(4) * PROJECT_PRICE_MULTIPLIER}</span>
-            <span className="text-[0.8em] font-bold ml-1"> {configuredNetwork.nativeCurrency.symbol}</span>
+            <span className="text-[1em] font-normal badge badge-md badge-accent badge-outline ml-0 mr-sm">{+balance?.toFixed(4) * PROJECT_PRICE_MULTIPLIER}</span>
+            <span className="text-[1em] font-bold ml-1.5"> {configuredNetwork.nativeCurrency.symbol}</span>
           </>
         ) : (
           <>
-            <span className="text-[0.8em] font-bold mr-1">$</span>
+            <span className="text-[1em]">$</span>
             {/* <span>{(balance * price * PROJECT_PRICE_MULTIPLIER).toFixed(2)}</span> */}
-            <span>
+            <span className="text-[1em] font-normal badge badge-md badge-accent badge-outline ml-sm">
               {" "}
               {(balance * price * PROJECT_PRICE_MULTIPLIER).toLocaleString("en-US", { maximumFractionDigits: 0 })}
             </span>
