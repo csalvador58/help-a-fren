@@ -39,12 +39,42 @@ export const Header = () => {
       <li>
         <NavLink href="/">Home</NavLink>
       </li>
-      <li>
+      {/* <li>
         <NavLink href="/debug">
           <BugAntIcon className="h-4 w-4" />
           Debug Contracts
         </NavLink>
+      </li> */}
+      {/* <li>
+        <NavLink href="/helpafren/haf-donation-test">
+          <SparklesIcon className="h-4 w-4" />
+          Make A Donation
+        </NavLink>
       </li>
+      <li>
+        <NavLink href="/helpafren/haf-plea-test">
+          <SparklesIcon className="h-4 w-4" />
+          Plea For Help
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/helpafren/haf-proposal-test">
+          <SparklesIcon className="h-4 w-4" />
+          Proposal Form
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/helpafren/haf-vote-test">
+          <SparklesIcon className="h-4 w-4" />
+          Vote For A Fren
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/helpafren/haf-results-test">
+          <SparklesIcon className="h-4 w-4" />
+          Results
+        </NavLink>
+      </li> */}
       <li>
         <NavLink href="/example-ui">
           <SparklesIcon className="h-4 w-4" />
@@ -52,11 +82,23 @@ export const Header = () => {
         </NavLink>
       </li>
       <li>
+        <NavLink href="/ui-test">
+          <SparklesIcon className="h-4 w-4" />
+          UI-TEST
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/test-page">
+          <SparklesIcon className="h-4 w-4" />
+          Test Page
+        </NavLink>
+      </li>
+      {/* <li>
         <NavLink href="/blockexplorer">
           <MagnifyingGlassIcon className="h-4 w-4" />
           Block Explorer
         </NavLink>
-      </li>
+      </li> */}
     </>
   );
 
@@ -90,16 +132,16 @@ export const Header = () => {
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">Scaffold-ETH</span>
-            <span className="text-xs">Ethereum dev stack</span>
+            <span className="font-bold leading-tight">Help-A-Fren</span>
+            <span className="text-xs">ETHGlobal Online 2023</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
       </div>
-      <div className="navbar-end flex-grow mr-4">
+      {/* <div className="navbar-end flex-grow mr-4">
         <RainbowKitCustomConnectButton />
         <FaucetButton />
-      </div>
+      </div> */}
     </div>
   );
 };

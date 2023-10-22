@@ -1,26 +1,29 @@
 import { RPCError, RPCErrorCode } from "magic-sdk";
 import { Magic } from "magic-sdk";
 
-export const MagicLogin = async () => {
+export const MagicLogin = async (option: boolean) => {
   try {
     if (typeof window !== "undefined") {
-      const MAGIC = new Magic(process.env.NEXT_PUBLIC_MAGIC_API_KEY!, {
+      const MAGIC = new Magic(process.env.NEXT_PUBLIC_MAGIC_API_KEY || "pk_live_41151D8CF6250197", {
         network: {
-          rpcUrl: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY!}}`,
+          rpcUrl: `https://polygon-mumbai.g.alchemy.com/v2/${
+            process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || "2olqx6rQSWK3TThRmPvylRkNPbD0dDNj"
+          }}`,
           chainId: 80001, // or preferred chain
         },
       });
 
-      const email = ""; // Set to empty string to force Magic to show UI
-      if (!!email && !!MAGIC) {
-        // console.log('Logging in Magic with email: ', email);
-        const response = await MAGIC.auth.loginWithEmailOTP({ email: email });
-        // console.log("response: ", response);
-        return { response, MAGIC };
+      if (!option) {
+        await MAGIC.user.logout();
+        console.log("Magic logged out");
+        return null;
       } else {
-        const response = await MAGIC.wallet.connectWithUI();
-        // console.log("response: ", response);
-        return { response, MAGIC };
+        if (await MAGIC.user.isLoggedIn()) {
+          return MAGIC;
+        } else {
+          await MAGIC.wallet.connectWithUI();
+          return MAGIC;
+        }
       }
     } else {
       console.log("Magic not available");
