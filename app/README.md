@@ -15,6 +15,29 @@ In this project, we mimic DAO governance while applying account abstraction and 
 ## Our Progress:
 In this version we were able to produce a fully functional DAO governance application with account abstraction.  A proposer user is able to submit a proposal on-chain without the need for a soft/hard wallet with the use of Magic and Biconomy toolkits.  Additionally, voters have the same UX experience to submit votes on-chain.  We were not able to fully implement a DID trust triangle (Issuer, Holder, Verifier) as planned and look forward to adding in Polygon ID in the next iteration.  The use of DIDs and verifiable credentials would also allow for a geolocation feature we initially planned to only allow authorized members of a community based on residence to affect the proposals and governance in our protocol. 
 
+# Walkthrough
+
+1. An organizer can start a *Please for Help* for any cause, community, or individual in need of help.
+![Plea for help](packages/nextjs/public/assets/1-haf-plea.png)
+
+2. Donors will search for any *Plea for Help* and make donations into the designated treasury fund wallet.
+![Making a Donation](packages/nextjs/public/assets/2-haf-donations.png)
+
+3. A Proposer will fill out a form to submit a proposal to make use of available funds. After a determined time, the voting period will begin.
+![Submitting a Proposal](packages/nextjs/public/assets/3-haf-proposal.png)
+
+4. Authorization is require via a Magic sign-in link forcing a user to receive and respond with the emailed One-Time-Password.
+![Magic Login](packages/nextjs/public/assets/4-haf-magic.png)
+
+5. A voter will view proposals and select a vote *(For, Against, Abstain)* on the proposal during the voting period.
+![Voting](packages/nextjs/public/assets/5-haf-vote.png)
+
+6. During the vote submittal process, a voting NFT token is minted for the voter and delegated to enable a voting power. The NFT token is transferred to their Smart Account that was generated with Magic/Biconomy authorization process.  The token ID is created by taking the last 7 characters of the hash created from the voter's smart account address and proposal ID. The NFT meta data also includes the proposal details uploaded to IPFS.
+![Vote Token](packages/nextjs/public/assets/7-haf-token.png)
+
+7. If a proposal receives a sufficient amount of votes and the voting period has ended, the proposal will be available to execute and send the proposed funds to the intended recipient's wallet address. 
+![Results](packages/nextjs/public/assets/6-haf-results.png)
+
 
 # How it's Made
 
