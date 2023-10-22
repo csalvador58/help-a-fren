@@ -44,6 +44,7 @@ const UITest: NextPage = () => {
   const [pleaReason, setPleaReason] = useState("");
   const [pleaUse, setPleaUse] = useState("");
   const [pleaMessage, setPleaMessage] = useState("");
+  const [forProposalForm, setForProposalForm] = useState("");
 
   // Proposal
   const [proposalSubmitter, setProposalSubmitter] = useState("");
@@ -79,6 +80,7 @@ const UITest: NextPage = () => {
             setPleaReason={setPleaReason}
             setPleaUse={setPleaUse}
             setPleaMessage={setPleaMessage}
+            setForProposalForm={setForProposalForm}
           />
 
           {/* Proposer */}
@@ -98,6 +100,7 @@ const UITest: NextPage = () => {
             setUse={setProposalUse}
             setAmount={setProposalAmount}
             pleaMessage={pleaMessage}
+            forProposalForm={forProposalForm}
           />
 
           {/* Voter */}

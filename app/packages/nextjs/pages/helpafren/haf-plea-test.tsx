@@ -14,9 +14,18 @@ interface IPleaProps extends IPleaDetails {
   setPleaReason: (Reason: string) => void;
   setPleaUse: (use: string) => void;
   setPleaMessage: (message: string) => void;
+  setForProposalForm: (message: string) => void;
 }
 
-const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse, setPleaMessage }: IPleaProps) => {
+const PleaTest = ({
+  pleaReason,
+  pleaUse,
+  pleaMessage,
+  setPleaReason,
+  setPleaUse,
+  setPleaMessage,
+  setForProposalForm,
+}: IPleaProps) => {
   const [isRadio1Checked, setIsRadio1Checked] = useState(true);
   const [isRadio2Checked, setIsRadio2Checked] = useState(false);
 
@@ -26,7 +35,10 @@ const PleaTest = ({ pleaReason, pleaUse, pleaMessage, setPleaReason, setPleaUse,
   };
 
   const submitHandler = () => {
-    console.log("submitHandler");
+    setForProposalForm(pleaMessage);
+    setPleaReason("");
+    setPleaUse("");
+    setPleaMessage("");
   };
 
   return (
