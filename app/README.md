@@ -45,6 +45,8 @@ In this version we were able to produce a DAO governance application with accoun
 
 ![Results](packages/nextjs/public/assets/6-haf-results.png)
 
+# Demo
+https://github.com/csalvador58/help-a-fren/blob/d628f2555d9f85514ac1c4330e7e665a630fc438/app/packages/nextjs/public/assets/helpafren.mp4
 
 # How it's Made
 
