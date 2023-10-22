@@ -443,10 +443,9 @@ const ProposalTest = ({
     <HafCardWrap>
       <div className="card w-full bg-base-100 shadow-xl">
         <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
-          <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+          <div className="haf-purple grid gap-5 p-xl place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
             <figure>
-              {/* <img src="/haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /> */}
-              <Image src="/haf-logo-drop-shadow.svg" alt="Help-A-Fren Logo" width={350} height={350} />
+              <Image src="/haf-logo-drop-shadow.svg" alt="Help-A-Fren Logo" width={325} height={237} />
             </figure>
             <div className="donation-details">
               <div className="text-lg">
@@ -464,7 +463,7 @@ const ProposalTest = ({
               </div>
               <div className="text-lg -mt-lg">
                 <p className="inline-flex">Balance</p>
-                <span className="inline-flex gap-4 m-sm">
+                <span className="inline-flex m-xs">
                   <Balance address={TREASURY_WALLET} className="min-h-0 h-auto" />
                 </span>
               </div>

@@ -26,10 +26,9 @@ const DonationTest = ({ btnActive, setBtnActive }: IDonationProps) => {
     <HafCardWrap>
       <div className="card w-full bg-base-100 shadow-xl">
         <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[55%_45%]">
-          <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+          <div className="haf-purple grid gap-5 p-xl place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
             <figure>
-              {/* <img src="./haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /> */}
-              <Image src="/haf-logo-drop-shadow.svg" alt="Help-A-Fren Logo" width={350} height={350} />
+              <Image src="/haf-logo-drop-shadow.svg" alt="Help-A-Fren Logo" width={325} height={237} />
             </figure>
           </div>
           <div className="grid gap-5 p-md">

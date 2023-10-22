@@ -92,7 +92,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
         </span>
       ) : (
         <a
-          className={`ml-1.5 text-${size} font-normal`}
+          className={`ml-1.5 text-${size} font-normal text-sm badge badge-md badge-accent badge-outline ml-xs`}
           target="_blank"
           href={`https://mumbai.polygonscan.com/address/${address}`}
           rel="noopener noreferrer"

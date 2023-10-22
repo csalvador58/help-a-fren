@@ -34,9 +34,20 @@ h3 {
   margin: 0;
 }
 
+/* h4 {
+  font-size: 1.05rem;
+  font-weight: bold;
+  margin: 0;
+  margin-bottom: .2rem;
+} */
+
 p {
   margin: 1rem 0;
   font-size: 1rem;
+}
+
+p.m-0 {
+  margin: 0;
 }
 
 p.small-text {
@@ -44,7 +55,7 @@ p.small-text {
 }
 
 .btn {
-  @apply shadow-lg;
+  /* @apply shadow-lg; */
   /* background-color: #3F2849; */
   /* color: #ffffff; */
   border: 1px solid transparent;

@@ -493,10 +493,9 @@ const VoteForAFrenTest = () => {
     <HafCardWrap>
       <div className="card w-full bg-base-100 shadow-xl">
         <div className="card-body haf-card-body gap-0 p-0 grid md:grid-cols-[35%_65%]">
-          <div className="haf-purple grid gap-5 p-md place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
+          <div className="haf-purple grid gap-5 p-xl place-content-center bg-primary text-primary-content rounded-tl-2xl rounded-tr-2xl md:rounded-tr-none md:rounded-bl-2xl image-full">
             <figure>
-              {/* <img src="/haf-logo-drop-shadow.svg" className="w-6/12 mx-auto max-w-lg" /> */}
-              <Image src="/haf-logo-drop-shadow.svg" alt="Help-A-Fren Logo" width={350} height={350} />
+              <Image src="/haf-logo-drop-shadow.svg" alt="Help-A-Fren Logo" width={325} height={237} />
             </figure>
             <div className="donation-details">
               <div className="text-lg">
@@ -514,7 +513,7 @@ const VoteForAFrenTest = () => {
               </div>
               <div className="text-lg -mt-lg">
                 <p className="inline-flex">Balance</p>
-                <span className="inline-flex gap-4 m-sm">
+                <span className="inline-flex m-xs">
                   <Balance address={TREASURY_WALLET} className="min-h-0 h-auto" />
                 </span>
               </div>
@@ -529,19 +528,21 @@ const VoteForAFrenTest = () => {
                   successfully cast votes. Be sure to submit each proposal vote in order for it to count.
                 </p>
               </div>
-            </div>
-            <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
-              {!isMagicActive && (
-                <div className="card-header max-w-lg">
-                  <h2 className="card-title justify-center">Require to Login to Confirm Your Identity</h2>
-                  <div className="card-actions">
-                    <button className="btn btn-accent" onClick={logIntoMagic}>
-                      Click Here to Log In
-                    </button>
+              {isMagicActive && (
+                <div className="grid p-6 nested-card-wrapper place-content-center">
+                  <div className="card-header max-w-lg nested-card">
+                    <p className="card-title">Confirm your identity</p>
+                    <div className="card-actions place-content-center">
+                      <button className="btn btn-accent" onClick={logIntoMagic}>
+                        Login
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
-              {isMagicActive &&
+            </div>
+            <div className="grid lg:grid-cols-2 grid-flow-row gap-7 p-6 nested-card-wrapper">
+              {!isMagicActive &&
                 proposals &&
                 proposals.map((item: ProposalDetails) => (
                   <div key={item.proposalId} className="form-control nested-card place-content-between">
@@ -556,26 +557,23 @@ const VoteForAFrenTest = () => {
                           <HafIDFormat address={item.proposalId} />
                         </span>
                       </div>
-                      <h3 className="text-accent">{item.description.title || "Not Available"}</h3>
-
-                      <p className="inline-flex">Recipient Name: {item.description.recipient}</p>
-
-                      <div className="text-lg">
-                        <p className="inline-flex">Recipient Address: </p>
-                        <span className="inline-flex gap-4 m-sm">
-                          <Address address={item.description.wallet} />
-                        </span>
-                      </div>
-                      <p>Reason: {item.description.reason}</p>
-                      <p>Plan: {item.description.use}</p>
+                      {/* <h3 className="text-accent">{item.description.title || "Not Available"}</h3> */}
+                      <h3 className="text-accent mt-sm mb-xl">{item.description.title || "Not Available"}</h3>
+                      <p><span className=" mt-0 font-bold">Recipient:</span> {item.description.recipient}</p>
+                      <p className="inline-flex m-0 font-bold">Address: </p>
+                      <span className="inline-flex ml-sm">
+                        <Address address={item.description.wallet} />
+                      </span>
+                      <p><span className="mt-0 font-bold">Reason:</span> {item.description.reason}</p>
+                      <p><span className="mt-0 font-bold">Plan:</span> {item.description.use}</p>
                     </div>
-                    <div className="w-full flex flex-row justify-between">
+                    <div className="w-full flex flex-row justify-between mt-md">
                       <div className="max-w-xs">
                         <select
                           className="select select-bordered"
                           value={voteOptions[item.proposalId] || ""}
                           onChange={e => onVoteChangeHandler(item.proposalId, e.target.value)}
-                        >
+                          >
                           <option id="no-vote" value="" disabled selected>
                             Select
                           </option>
@@ -622,7 +620,7 @@ const VoteForAFrenTest = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+              ))}
             </div>
           </div>
         </div>
